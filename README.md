@@ -58,18 +58,21 @@ Hotové, nasazené ze složky `Desktop/Alena Hanušová web`:
 | `icons/media/irozhlas.svg` | `Logo_iRozhlas.cz.svg` | vektor (dodaný `iROZHLAS.png` se nepoužil) |
 | `icons/media/denik.svg` | `Denik-logo-RGB.svg` | vektor |
 | `icons/media/cz-basketball.png` | `249ZTJ.jpg` | z CMYK do sRGB, 420×80 |
+| `img/mapa.png` | `Praha + 20 km od Berouna.png` | 560×400 — **jen 1× zobrazované velikosti** |
 
 Zbývá dodat:
 
 - **`assets/icons/whatsapp.svg`** — oficiální SVG z WhatsApp Brand Resources.
   Po výměně soubor promítni i do `<symbol id="i-whatsapp">` v `index.html`,
   `ochrana-osobnich-udaju.html` a `404.html`.
-- **`assets/img/mapa.svg`** — export uzlu `Mapa / Praha + 20 km od Berouna` z Figmy
-  s textem převedeným na křivky. Zatím je tam vlastní schéma (Praha, kružnice 20 km,
-  šest obcí), které funguje, ale nesedí na návrh.
 - **Šest ikon tréninkových oblastí** v `assets/icons/` je kreslených podle popisů
   v sekci 5.6 zadání. Pokud mají odpovídat Figmě, potřebují export uzlů
   `Ikona / *` › `Icon` jako 24×24 SVG.
+- **Mapu ve 2× nebo jako SVG.** Dodaná `mapa.png` má 560×400, což je přesně
+  zobrazovaná velikost, takže na retina displejích bude mírně rozmazaná. Export
+  z Figmy ve 2× (1120×800) nebo SVG s textem v křivkách to vyřeší. Obrázek má
+  vlastní zaoblené rohy a podklad, proto `.where__map` v CSS nemá rámeček — při
+  výměně to zachovej.
 - **Vyšší rozlišení loga ČTK.** Dodané má 150×22 px, takže se zobrazuje 1:1 a na
   retina displejích bude jediné rozmazané — ostatní loga jsou vektory nebo se
   zmenšují. Ideálně vektor z press materiálů ČTK.
