@@ -1,0 +1,4 @@
+.DS_Store
+
+# lokální konfigurace náhledu (obsahuje absolutní cestu k tomuto počítači)
+.claude/
