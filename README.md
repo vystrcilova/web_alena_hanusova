@@ -111,9 +111,13 @@ certifikátu řeší Netlify samo — proto v `netlify.toml` žádná redirect p
 
 **Cesta přes Git (doporučená — každý `git push` pak web sám aktualizuje):**
 
-1. Založ si účet na [netlify.com](https://netlify.com) (stačí přihlášení přes GitHub).
-2. **Add new site → Import an existing project → GitHub**, povol Netlify přístup
-   a vyber repozitář `vystrcilova/web_alena_hanusova`.
+1. Založ si účet na [netlify.com](https://netlify.com). Způsob přihlášení je
+   jedno — Google, GitHub i e-mail fungují stejně.
+2. **Add new site → Import an existing project → GitHub**. Pokud jsi přihlášená
+   jinak než přes GitHub, Netlify si teď vyžádá autorizaci GitHubu jako
+   samostatný krok (instalace jeho GitHub App). U výběru repozitářů zvol
+   **Only select repositories** a povol jen `web_alena_hanusova`. Autorizuj ten
+   GitHub účet, který repozitář vlastní (`vystrcilova`).
 3. U nastavení buildu **nech všechno prázdné** — build command žádný,
    publish directory `.`. Netlify si to přečte z `netlify.toml`.
 4. **Deploy**. Za pár sekund web běží na adrese typu
