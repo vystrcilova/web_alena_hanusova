@@ -18,15 +18,17 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# Assety mají v odkazech verzi (?v=2026-09), takže je roční cache bezpečná.
-# POZOR: po výměně obrázku nebo úpravě CSS je nutné tu verzi v HTML zvýšit,
-# jinak vracejícím se návštěvníkům zůstane rok stará podoba.
+# Obrázky, CSS a JS: hodinová cache. Po hodině se prohlídač zeptá, Netlify
+# odpoví ETagem "nezměnilo se" (HTTP 304, pár set bajtů) a stahuje jen to, co
+# se opravdu změnilo. Díky tomu se každá úprava rozšíří sama a zvyšování ?v=
+# v HTML není povinné — zůstává jen jako páka pro okamžité vynucení.
 [[headers]]
   for = "/assets/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=3600, must-revalidate"
 
-# Písma mají verzi v názvu souboru, takže se nikdy nemění pod stejnou adresou.
+# Písma jsou výjimka: názvy souborů se nikdy nemění, takže pod stejnou adresou
+# nikdy nebude jiný obsah. Proto rok a immutable.
 [[headers]]
   for = "/assets/fonts/*"
   [headers.values]

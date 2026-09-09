@@ -97,8 +97,21 @@ Pokud to bude vadit, řešení jsou dvě: na telefonech přepnout mřížku na d
 sloupce (`grid-template-columns: repeat(2, 1fr)` do `.media-logos` pod 480 px),
 nebo u ČTK použít jen kompaktní znak s globusem bez opisu.
 
-Po výměně obrázků zvyš verzi v query stringu (`?v=2026-09` → `?v=2026-10`)
-u všech odkazů v HTML, jinak se návštěvníkům roční cache neobnoví.
+### Cache a `?v=` v odkazech
+
+Obrázky, CSS a JS mají **hodinovou** cache s `must-revalidate`, písma **roční**
+s `immutable` (jejich názvy souborů se nikdy nemění). Zvyšovat `?v=2026-09`
+v HTML proto **není povinné** — každá úprava se rozšíří sama nejpozději do hodiny.
+
+Query string tam zůstal jako páka na okamžité vynucení: když potřebuješ, aby
+se změna projevila hned všem (třeba špatná fotka, kterou je nutné okamžitě
+stáhnout), zvyš `?v=` u dotčených odkazů a cache se obejde.
+
+Původně to bylo nastavené na rok bez revalidace, což je rychlejší, ale znamenalo
+to, že po každé výměně obrázku se `?v=` **musí** zvýšit — jinak vracejícím se
+návštěvníkům zůstane rok stará podoba a ty to nepoznáš, protože ve svém
+prohlížeči novou verzi vidíš. U webu, který se mění párkrát do roka a má 183 kB,
+ta ztráta výkonu nestojí za to riziko.
 
 ## Nasazení
 
