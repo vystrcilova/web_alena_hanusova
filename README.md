@@ -32,15 +32,16 @@ request). Soubory v `assets/icons/` jsou jejich zdroj — **při úpravě ikony 
 
 ## Co zbývá doplnit
 
-Placeholdery v hranatých závorkách jsou v kódu vidět a dají se najít přes
-`grep -rn "\[doplnit" .`:
+IČO je doplněné (`07287607`). Zbytek je v kódu jako `TODO` komentáře, aby na
+živém webu nesvítily hranaté závorky na návštěvníky. Najdeš je přes
+`grep -rn "TODO" --include="*.html" .`:
 
 | kde | co |
 |---|---|
-| `index.html`, `ochrana-osobnich-udaju.html` | **IČO** — v patičce a v zásadách (3 výskyty) |
-| `index.html`, sekce „Kde a kdy" | **pražské městské části / haly**, kde se trénuje |
-| `index.html`, „Všechny články a rozhovory" | **profilové URL** — zbl.basketball, olympijskytym.cz, Wikipedia |
-| `index.html`, JSON-LD komentář | tytéž URL do `Person.sameAs` |
+| `index.html`, sekce „Kde a kdy" | **pražské městské části / haly.** Původní věta „V Praze nejčastěji …" je zakomentovaná; odstavec bez ní čte plynule, takže spěch není. |
+| `index.html`, „Všechny články a rozhovory" | **profilové URL** — zbl.basketball, olympijskytym.cz, Wikipedia. Zakomentovaná položka `<li>`, obnovit po ověření adres. |
+| `index.html`, JSON-LD | tytéž URL do `Person.sameAs` (u JSON-LD je k tomu komentář) |
+| `index.html`, sekce Reference | **tři citace klientů.** Celá sekce je v `<template>`, takže se nerenderuje ani neindexuje — tohle jsou jediné hranaté závorky, které v kódu zůstaly, a nikdo je nevidí. |
 
 ### Podklady
 
