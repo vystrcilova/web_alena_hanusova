@@ -296,6 +296,17 @@ npx html-validate@9 index.html ochrana-osobnich-udaju.html 404.html
 
 ## Poznámky k rozhodnutím
 
+- **Odstraněné zmínky o prevenci zranění.** Zadání mělo v sekci „Co trénujeme"
+  kartu „Síla a prevence zranění" s textem o péči o kolena a kotníky, v „O mně"
+  větu „Techniku učím vždy tak, aby šetřila kolena a kotníky" a u karty 20+
+  formulaci „bez zbytečných zranění". Vše odstraněno na výslovné přání
+  zadavatelky — trenérka není fyzioterapeutka a slibovat prevenci zranění
+  nechtěla. Karta zůstala, jen se jmenuje **„Síla a kondice"** a text je
+  „Zpevnění středu těla, správné dopady a práce s vlastní vahou"; mřížka tak
+  má pořád 6 karet. Ikona přejmenována na `sila-kondice.svg`.
+  Zmínka o vlastních zraněních v „O mně" („prošla jsem si vším: dřinou,
+  zraněními…") zůstala — je to její vlastní příběh, ne slib zákazníkovi.
+
 - **Červená na tmavém podkladu.** `--red` (`#D62828`) má na `--ink` kontrast jen
   3,7:1, což u kickeru (15 px) neprojde AA. Pro text na tmavém podkladu je proto
   token `--red-on-dark` (`#DD4A4A`, stejný odstín, 4,55:1). Na světlém podkladu
