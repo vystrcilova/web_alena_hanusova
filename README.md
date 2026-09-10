@@ -42,7 +42,6 @@ IČO je doplněné (`07287607`). Zbytek je v kódu jako `TODO` komentáře, aby 
 | `index.html`, sekce „Kde a kdy" | **pražské městské části / haly.** Původní věta „V Praze nejčastěji …" je zakomentovaná; odstavec bez ní čte plynule, takže spěch není. |
 | `index.html`, „Všechny články a rozhovory" | **profilové URL** — zbl.basketball, olympijskytym.cz, Wikipedia. Zakomentovaná položka `<li>`, obnovit po ověření adres. |
 | `index.html`, JSON-LD | tytéž URL do `Person.sameAs` (u JSON-LD je k tomu komentář) |
-| `assets/js/main.js` | **měřicí ID pro GA4** — konstanta `GA_ID`, viz sekce Google Analytics 4 |
 | `index.html`, sekce Reference | **tři citace klientů.** Celá sekce je v `<template>`, takže se nerenderuje ani neindexuje — tohle jsou jediné hranaté závorky, které v kódu zůstaly, a nikdo je nevidí. |
 
 ### Podklady
@@ -105,7 +104,7 @@ Měřicí ID se vyplňuje na **jednom místě** — konstanta `GA_ID` na začát
 `assets/js/main.js`:
 
 ```js
-var GA_ID = 'G-XXXXXXXXXX';
+var GA_ID = 'G-G7GBSGLB71';
 ```
 
 Najdeš ho v GA4 pod **Správa → Datové streamy → Web → ID měření**. Dokud tam

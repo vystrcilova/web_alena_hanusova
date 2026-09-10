@@ -11,7 +11,7 @@
      GA4 → Správa → Datové streamy → Web → „ID měření“ (tvar G-XXXXXXXXXX).
      Dokud tu zůstane placeholder, lišta se vůbec nezobrazí a nic se nenačte —
      web se chová, jako by žádná analytika nebyla. */
-  var GA_ID = 'G-XXXXXXXXXX';
+  var GA_ID = 'G-G7GBSGLB71';
 
   var STORAGE_KEY = 'ah-analytika-souhlas';
   var GA_PLACEHOLDER = 'G-XXXXXXXXXX';
