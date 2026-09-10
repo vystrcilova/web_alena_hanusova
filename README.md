@@ -5,7 +5,8 @@ Statický one-pager. Čisté HTML5 + jeden CSS + jeden JS soubor, žádný frame
 
 - **Doména:** `baskethanusova.cz`, registrovaná u Webglobe
 - **Hosting:** Netlify (free tier), nasazení z Gitu
-- **Bez cookies, bez analytiky, bez externích requestů** → web nepotřebuje cookie lištu
+- **Google Analytics 4** se souhlasem — bez kliknutí na lištu se nenačte a neuloží žádné cookies
+- Kromě GA (po souhlasu) web nenačítá nic z cizích serverů; písma jsou uložená přímo na webu
 
 ## Struktura
 
@@ -19,7 +20,7 @@ netlify.toml                  hlavičky a cache pro Netlify
 favicon.ico  favicon.svg  apple-touch-icon.png
 assets/
   css/style.css               jediný stylopis (tokeny + všechny komponenty)
-  js/main.js                  jediný skript (jen mobilní menu)
+  js/main.js                  jediný skript (mobilní menu + souhlas s analytikou)
   fonts/                      Barlow 400/500/600, Barlow Condensed 600/700
                               woff2, subsety latin + latin-ext
   img/                        hero, about, og-image, mapa
@@ -41,6 +42,7 @@ IČO je doplněné (`07287607`). Zbytek je v kódu jako `TODO` komentáře, aby 
 | `index.html`, sekce „Kde a kdy" | **pražské městské části / haly.** Původní věta „V Praze nejčastěji …" je zakomentovaná; odstavec bez ní čte plynule, takže spěch není. |
 | `index.html`, „Všechny články a rozhovory" | **profilové URL** — zbl.basketball, olympijskytym.cz, Wikipedia. Zakomentovaná položka `<li>`, obnovit po ověření adres. |
 | `index.html`, JSON-LD | tytéž URL do `Person.sameAs` (u JSON-LD je k tomu komentář) |
+| `assets/js/main.js` | **měřicí ID pro GA4** — konstanta `GA_ID`, viz sekce Google Analytics 4 |
 | `index.html`, sekce Reference | **tři citace klientů.** Celá sekce je v `<template>`, takže se nerenderuje ani neindexuje — tohle jsou jediné hranaté závorky, které v kódu zůstaly, a nikdo je nevidí. |
 
 ### Podklady
@@ -96,6 +98,45 @@ v logu ČTK je v té velikosti nečitelný a řádek působí nevyrovnaně.
 Pokud to bude vadit, řešení jsou dvě: na telefonech přepnout mřížku na dva
 sloupce (`grid-template-columns: repeat(2, 1fr)` do `.media-logos` pod 480 px),
 nebo u ČTK použít jen kompaktní znak s globusem bez opisu.
+
+### Google Analytics 4
+
+Měřicí ID se vyplňuje na **jednom místě** — konstanta `GA_ID` na začátku
+`assets/js/main.js`:
+
+```js
+var GA_ID = 'G-XXXXXXXXXX';
+```
+
+Najdeš ho v GA4 pod **Správa → Datové streamy → Web → ID měření**. Dokud tam
+zůstane placeholder `G-XXXXXXXXXX`, lišta se nezobrazí a nenačte se vůbec nic —
+web se chová, jako by žádná analytika neexistovala. Je to schválně, aby se dal
+kód nasadit dřív, než vznikne GA4 účet.
+
+**Jak souhlas funguje**
+
+- Před kliknutím na „Souhlasím" **neodejde na Google jediný požadavek** a neuloží
+  se žádné cookies. Ověřeno v prohlížeči, ne jen odhadem.
+- Volba se pamatuje v `localStorage` pod klíčem `ah-analytika-souhlas`
+  (`ano` / `ne`). Čtení i zápis jsou v `try/catch`, protože v anonymním okně
+  nebo při zakázaných datech stránek `localStorage` vyhodí výjimku.
+- Reklamní kategorie Consent Mode (`ad_storage`, `ad_user_data`,
+  `ad_personalization`) jsou **trvale zamítnuté**. Měření návštěvnosti je
+  nepotřebuje a web nemá reklamní ambice.
+- Odvolat souhlas jde tlačítkem v patičce každé stránky. Bez možnosti odvolání
+  by souhlas podle GDPR nebyl platný, takže to tlačítko není kosmetika.
+- Lišta se vkládá na začátek `<body>`, aby na ni klávesnice narazila hned, i když
+  je vizuálně dole.
+
+**Co je potřeba nastavit v GA4**
+
+V zásadách zpracování údajů je uvedená **doba uchování 14 měsíců**. Nastav to
+v GA4 pod **Správa → Nastavení dat → Uchovávání dat**, jinak text nebude
+odpovídat skutečnosti (výchozí hodnota GA4 jsou 2 měsíce).
+
+**Kdyby analytiku bylo potřeba vypnout**, vrať do `GA_ID` placeholder. Lišta
+zmizí, skript se přestane načítat a v zásadách je pak potřeba upravit sekci
+„Měření návštěvnosti".
 
 ### Cache a `?v=` v odkazech
 
