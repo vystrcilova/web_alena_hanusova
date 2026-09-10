@@ -311,9 +311,20 @@ npx html-validate@9 index.html ochrana-osobnich-udaju.html 404.html
   3,7:1, což u kickeru (15 px) neprojde AA. Pro text na tmavém podkladu je proto
   token `--red-on-dark` (`#DD4A4A`, stejný odstín, 4,55:1). Na světlém podkladu
   a jako pozadí tlačítek zůstává původní `#D62828`.
-- **Délka titulku.** Titulek ze zadání má 85 znaků; Google zobrazí asi 60.
-  Text jsem nechala podle zadání, ale zkrácení stojí za úvahu — např.
+- **Zkrácený titulek.** Zadání mělo titulek o 85 znacích; Google zobrazí asi 60,
+  takže se konec odřezával. Zkrácen na 67 znaků:
   „Individuální basketbalové tréninky | Praha, Beroun – Alena Hanušová".
+  Odchylka od doslovného textu v zadání, provedená kvůli míře prokliku.
+  `og:title` zůstal podle zadání, ten se v našeptávači neřeže.
+- **Strukturovaná data mají pátý uzel.** K `Person`, `Service`, `FAQPage`
+  a `WebSite` přidán **`SportsActivityLocation`** kvůli lokálním výsledkům —
+  jméno, popis, telefon, e-mail, `priceRange` 1400–1700 Kč, `sport`,
+  `areaServed` (Praha, Beroun, okruh 20 km) a odkazy na uzly `Person`
+  a `Service`. **Záměrně bez `address`:** trenérka nemá provozovnu, trénuje
+  v pronajatých halách, a registrační adresa domény je soukromá adresa, která
+  na veřejný web nepatří. Bez adresy sice Google nevykreslí plný odznak
+  provozovny, ale hlavní páka u lokálního hledání je Profil firmy na Googlu,
+  ne tahle značka.
 - **Dotykové plochy.** Loga médií (24–40 px) a dlaždice v patičce (32 px) mají
   podle návrhu menší vizuální velikost, než je požadovaných 44×44. Vizuál zůstal
   a klikací plocha se rozšířila na 44 px (`min-height`, u dlaždic `::after`).
