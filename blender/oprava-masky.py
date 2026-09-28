@@ -8,7 +8,7 @@ Oprava: levá hrana návleku je odečtená ručně po řádcích (body níže, s
 v hero.jpg 960 × 1200). Nalevo od ní se v pásu y 560–880 vymažou tmavé pixely.
 Kůže ruky je světlá, takže zůstane. U prstů (od y 745) je práh nižší, protože
 stíny mezi prsty jsou tmavé, ale pořád světlejší než pozadí. Na hraně návleku
-je měkký přechod 1,5 px.
+je měkký přechod 2 px.
 
     python3 blender/oprava-masky.py <hero.jpg> <maska.png> <výstup.png>
 
@@ -22,17 +22,21 @@ SOURCE, MASK, OUT = sys.argv[1:4]
 W, H = 960, 1200
 
 # levá hrana návleku: (y, x)
+# Nahoře (u šortek) a od kolene dolů je hrana změřená: stínovaná strana návleku
+# je tmavší než pozadí (jas 1–5 proti 8–10). Na stehně (y 640–760) mají obě
+# plochy stejný jas, tam je hrana vedená přirozeným obloukem stehna — první
+# verze byla o 7–12 px užší a noha působila hubenější než druhá.
 EDGE = [
-    (560, 440), (575, 450), (600, 466), (620, 480), (640, 493), (655, 505), (680, 515),
-    (700, 524), (720, 531), (740, 537), (760, 541), (780, 545), (800, 549),
-    (820, 552), (840, 555), (860, 558), (880, 561),
+    (560, 438), (575, 447), (600, 461), (620, 473), (640, 484), (660, 495),
+    (680, 505), (700, 514), (720, 522), (740, 530), (760, 537), (780, 543),
+    (800, 548), (820, 552), (840, 555), (860, 558), (880, 561),
 ]
 X_MIN = 420          # vlevo od toho je druhá noha, nesahat
 DARK_ARM = 22        # jas 0–255: pod tím je to pozadí, ne kůže paže
 DARK_HAND = 13       # u prstů přísněji, stíny mezi nimi jsou kolem 15–40
 HAND_Y = 745
 SKIN = 60            # 1 px od takhle světlé kůže se nemaže (hladký okraj paže)
-FEATHER = 1.5
+FEATHER = 2.0
 
 
 def read_gray(path):
