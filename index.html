@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,7 @@
 <meta name="description" content="Soukromé lekce basketbalu pro děti od 10 let s olympioničkou a vítězkou Euroligy. Střelba, driblink, hra 1 na 1. Praha, Beroun a okolí, v hale i venku. První trénink bez rizika.">
 <link rel="canonical" href="https://baskethanusova.cz/">
 <meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Alena Hanušová">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="cs_CZ">
 <meta property="og:title" content="Individuální basketbalové tréninky – Alena Hanušová">
@@ -16,12 +17,17 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#131316">
+<meta name="theme-color" content="#0c0c0f">
+
+<!-- Třída .js zapíná animace. Bez JavaScriptu je všechno vidět hned a ve výchozím stavu. -->
+<script>document.documentElement.className = 'js';</script>
 
 <link rel="preload" href="/assets/fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/barlow-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/img/hero.webp?v=2026-09" as="image" type="image/webp" fetchpriority="high">
-<link rel="stylesheet" href="/assets/css/style.css?v=2026-09">
+<link rel="preload" href="/assets/img/hriste/alena-dribling.webp" as="image" type="image/webp" fetchpriority="high"
+      imagesrcset="/assets/img/hriste/alena-dribling-600.webp 600w, /assets/img/hriste/alena-dribling.webp 960w"
+      imagesizes="(min-width: 1024px) 46vw, 92vw">
+<link rel="stylesheet" href="/assets/css/style.css?v=2026-10">
 
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -45,9 +51,29 @@
 <symbol id="i-obalka" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3.2 6.4 12 12.9l8.8-6.5"/></symbol>
 </defs></svg>
 
-<header class="site-header">
+<!-- Čáry basketbalového hřiště (polovina, FIBA, 1 jednotka = 1 cm, koš nahoře).
+     Používá je podlaha v úvodu i taktická tabule. pathLength="1" kvůli animaci kreslení. -->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>
+<symbol id="court-lines" viewBox="0 0 1500 1400" fill="none">
+  <path pathLength="1" d="M0 1400V0h1500v1400z"/>
+  <path pathLength="1" d="M505 0v580h490V0"/>
+  <path pathLength="1" d="M570 580a180 180 0 1 0 360 0a180 180 0 1 0-360 0"/>
+  <path pathLength="1" d="M90 0v299a675 675 0 0 0 1320 0V0"/>
+  <path pathLength="1" d="M625 120v37.5a125 125 0 0 0 250 0V120"/>
+  <path pathLength="1" d="M660 120h180"/>
+  <path pathLength="1" d="M727.5 157.5a22.5 22.5 0 1 0 45 0a22.5 22.5 0 1 0-45 0"/>
+  <path pathLength="1" d="M570 1400a180 180 0 0 1 360 0"/>
+</symbol>
+<marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+  <path d="M0 0l10 5-10 5z" fill="context-stroke"/>
+</marker>
+</defs></svg>
+
+<header class="site-header" id="site-header">
   <div class="container site-header__bar">
-    <a class="brand" href="#top">Alena Hanušová</a>
+    <a class="brand" href="#top">
+      <span class="brand__ball" aria-hidden="true"></span>Alena Hanušová
+    </a>
 
     <nav class="nav" aria-label="Hlavní navigace">
       <ul class="nav__list">
@@ -59,6 +85,9 @@
         <li><a class="nav__link" href="#kontakt">Kontakt</a></li>
       </ul>
     </nav>
+
+    <!-- Časomíra útoku: při scrollu odpočítává 24 → 0. Jen dekorace. -->
+    <span class="shot-clock" aria-hidden="true"><span class="shot-clock__digits" id="shot-clock">24</span></span>
 
     <a class="btn btn--primary btn--sm" href="#kontakt">Domluvit trénink</a>
 
@@ -83,61 +112,96 @@
 
 <main id="main">
 
+<!-- =====================================================================
+     1. Úvod — hráčka v kuželu reflektoru na palubovce
+     ===================================================================== -->
 <section class="hero" id="top">
   <div class="container hero__grid">
     <div class="hero__body">
-      <p class="kicker">Basketbalová trenérka · Olympionička · Vítězka Euroligy</p>
-      <h1 class="hero__title">Individuální basketbalové tréninky pro děti a&nbsp;mládež</h1>
-      <p class="hero__perex">Soukromé lekce basketbalu s&nbsp;bývalou reprezentantkou. Střelba, driblink, práce nohou a&nbsp;čtení hry — jeden na jednoho nebo v&nbsp;malé skupině, v&nbsp;Praze, Berouně a&nbsp;okolí. Ligovým hráčkám a&nbsp;hráčům nabízím přípravu podle postu — specializace pivot.</p>
-      <div class="btn-row">
-        <a class="btn btn--primary btn--block" href="#kontakt">Domluvit trénink</a>
-        <a class="btn btn--secondary btn--block" data-cta="whatsapp" rel="noopener" href="https://wa.me/420732590579?text=Dobr%C3%BD%20den%2C%20m%C3%A1m%20z%C3%A1jem%20o%20individu%C3%A1ln%C3%AD%20tr%C3%A9nink.%20V%C4%9Bk%20hr%C3%A1%C4%8De%3A%20%E2%80%A6%2C%20klub%3A%20%E2%80%A6%2C%20co%20chceme%20zlep%C5%A1it%3A%20%E2%80%A6">Napsat na WhatsApp</a>
+      <p class="kicker" data-reveal>Basketbalová trenérka · Olympionička · Vítězka Euroligy</p>
+      <h1 class="hero__title" data-split>Individuální basketbalové tréninky <span class="hero__title-accent">pro děti a&nbsp;mládež</span></h1>
+      <p class="hero__perex" data-reveal style="--delay: .35s">Soukromé lekce basketbalu s&nbsp;bývalou reprezentantkou. Střelba, driblink, práce nohou a&nbsp;čtení hry — jeden na jednoho nebo v&nbsp;malé skupině, v&nbsp;Praze, Berouně a&nbsp;okolí. Ligovým hráčkám a&nbsp;hráčům nabízím přípravu podle postu — specializace pivot.</p>
+      <div class="btn-row" data-reveal style="--delay: .5s">
+        <a class="btn btn--primary" href="#kontakt">Domluvit trénink <span class="btn__arrow" aria-hidden="true"></span></a>
+        <a class="btn btn--ghost" data-cta="whatsapp" rel="noopener" href="https://wa.me/420732590579?text=Dobr%C3%BD%20den%2C%20m%C3%A1m%20z%C3%A1jem%20o%20individu%C3%A1ln%C3%AD%20tr%C3%A9nink.%20V%C4%9Bk%20hr%C3%A1%C4%8De%3A%20%E2%80%A6%2C%20klub%3A%20%E2%80%A6%2C%20co%20chceme%20zlep%C5%A1it%3A%20%E2%80%A6"><svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>Napsat na WhatsApp</a>
       </div>
-      <p class="hero__meta">Praha, Beroun a&nbsp;okolí · od 10&nbsp;let · 60 nebo 90&nbsp;minut · první trénink nezávazně</p>
     </div>
 
-    <figure class="hero__figure">
-      <picture>
-        <source srcset="/assets/img/hero.webp?v=2026-09" type="image/webp">
-        <img class="hero__photo" src="/assets/img/hero.jpg?v=2026-09" width="960" height="1200"
-             fetchpriority="high" decoding="async"
-             alt="Alena Hanušová, basketbalová trenérka, při driblingu — studiová fotografie v reprezentačním dresu">
+    <figure class="stage" data-scroll="hero">
+      <picture class="stage__arena" aria-hidden="true">
+        <img src="/assets/img/hriste/arena.webp" srcset="/assets/img/hriste/arena-640.webp 640w, /assets/img/hriste/arena.webp 1200w"
+             sizes="(min-width: 1024px) 50vw, 100vw" width="1200" height="1500" alt="" decoding="async">
       </picture>
+      <svg class="stage__court" viewBox="0 0 1500 1400" aria-hidden="true" focusable="false"><use href="#court-lines"/></svg>
+      <p class="stage__name" aria-hidden="true"><span>Hanušová</span></p>
+      <div class="stage__player">
+        <span class="stage__shadow" aria-hidden="true"></span>
+        <img src="/assets/img/hriste/alena-dribling.webp"
+             srcset="/assets/img/hriste/alena-dribling-600.webp 600w, /assets/img/hriste/alena-dribling.webp 960w"
+             sizes="(min-width: 1024px) 46vw, 92vw" width="960" height="1200" fetchpriority="high" decoding="async"
+             alt="Alena Hanušová, basketbalová trenérka, při driblingu — studiová fotografie v reprezentačním dresu">
+        <!-- Trenérské poznámky křídou. Slova jsou z perexu, proto aria-hidden. -->
+        <svg class="stage__notes" viewBox="0 0 960 1200" aria-hidden="true" focusable="false">
+          <g class="note" style="--d: 1.5s">
+            <path pathLength="1" d="M612 128c-60-14-110 10-128 70" marker-end="url(#arrow)"/>
+            <text x="624" y="136">čtení hry</text>
+          </g>
+          <g class="note" style="--d: 1.8s">
+            <path pathLength="1" d="M930 392c26 44 14 86-24 112" marker-end="url(#arrow)"/>
+            <text x="934" y="372" text-anchor="end">driblink</text>
+          </g>
+          <g class="note" style="--d: 2.1s">
+            <path pathLength="1" d="M60 1150c10-58 52-90 108-104" marker-end="url(#arrow)"/>
+            <text x="18" y="1186">práce nohou</text>
+          </g>
+        </svg>
+      </div>
     </figure>
   </div>
+
+  <p class="hero__meta" data-reveal style="--delay: .65s"><span>Praha, Beroun a&nbsp;okolí</span><span class="sep" aria-hidden="true"> · </span><span>od 10&nbsp;let</span><span class="sep" aria-hidden="true"> · </span><span>60 nebo 90&nbsp;minut</span><span class="sep" aria-hidden="true"> · </span><span>první trénink nezávazně</span></p>
 </section>
 
-<section class="section section--red stats" aria-label="Sportovní úspěchy">
+<!-- =====================================================================
+     2. Výsledková tabule
+     ===================================================================== -->
+<section class="scoreboard" aria-label="Sportovní úspěchy">
   <div class="container">
-    <ul class="stats__list">
-      <li class="stats__item"><span class="stats__figure">LOH 2012</span><span class="stats__label">olympijská účast v&nbsp;Londýně</span></li>
-      <li class="stats__item"><span class="stats__figure">Euroliga</span><span class="stats__label">vítězka 2015 s&nbsp;USK Praha</span></li>
-      <li class="stats__item"><span class="stats__figure">8×</span><span class="stats__label">mistryně české ligy</span></li>
-      <li class="stats__item"><span class="stats__figure">5&nbsp;000+</span><span class="stats__label">bodů v&nbsp;české lize — top 10 historie</span></li>
-      <li class="stats__item"><span class="stats__figure">2× MS</span><span class="stats__label">mistrovství světa 2014 a&nbsp;2026</span></li>
+    <ul class="scoreboard__list">
+      <li class="scoreboard__item" data-reveal><span class="scoreboard__figure">LOH <span data-count="2012" data-count-from="1990">2012</span></span><span class="scoreboard__label">olympijská účast v&nbsp;Londýně</span></li>
+      <li class="scoreboard__item" data-reveal style="--delay: .08s"><span class="scoreboard__figure">Euroliga</span><span class="scoreboard__label">vítězka 2015 s&nbsp;USK Praha</span></li>
+      <li class="scoreboard__item" data-reveal style="--delay: .16s"><span class="scoreboard__figure"><span data-count="8">8</span>×</span><span class="scoreboard__label">mistryně české ligy</span></li>
+      <li class="scoreboard__item" data-reveal style="--delay: .24s"><span class="scoreboard__figure"><span data-count="5000">5&nbsp;000</span>+</span><span class="scoreboard__label">bodů v&nbsp;české lize — top 10 historie</span></li>
+      <li class="scoreboard__item" data-reveal style="--delay: .32s"><span class="scoreboard__figure"><span data-count="2">2</span>× MS</span><span class="scoreboard__label">mistrovství světa 2014 a&nbsp;2026</span></li>
     </ul>
   </div>
 </section>
 
-<section class="section section--page" id="o-mne">
+<!-- =====================================================================
+     3. O mně
+     ===================================================================== -->
+<section class="section section--paper about" id="o-mne">
   <div class="container about__grid">
-    <figure class="about__figure">
-      <picture>
-        <source srcset="/assets/img/about.webp?v=2026-09" type="image/webp">
-        <img class="about__photo" src="/assets/img/about.jpg?v=2026-09" width="840" height="1120" loading="lazy" decoding="async"
-             alt="Alena Hanušová s basketbalovým míčem, portrét v dresu české reprezentace">
-      </picture>
+    <figure class="about__figure" data-scroll="about">
+      <div class="about__slab" aria-hidden="true">
+        <svg class="about__slab-court" viewBox="0 0 1500 1400" focusable="false"><use href="#court-lines"/></svg>
+        <span class="about__seasons"><span class="about__seasons-num">15+</span><span class="about__seasons-label">sezon na nejvyšší úrovni</span></span>
+      </div>
+      <img class="about__photo" src="/assets/img/hriste/alena-portret.webp"
+           srcset="/assets/img/hriste/alena-portret-520.webp 520w, /assets/img/hriste/alena-portret.webp 840w"
+           sizes="(min-width: 1024px) 34vw, 80vw" width="840" height="1120" loading="lazy" decoding="async"
+           alt="Alena Hanušová s basketbalovým míčem, portrét v dresu české reprezentace">
     </figure>
 
     <div class="about__body">
-      <p class="kicker">Kdo tě bude trénovat</p>
-      <h2>Přes 15&nbsp;sezon na nejvyšší úrovni. Teď to předávám dál.</h2>
-      <div class="prose">
+      <p class="kicker" data-reveal>Kdo tě bude trénovat</p>
+      <h2 data-split>Přes 15&nbsp;sezon na nejvyšší úrovni. Teď to předávám dál.</h2>
+      <div class="prose" data-reveal>
         <p>Basketbalu se věnuju od dětství — reprezentace, olympiáda v&nbsp;Londýně, dvě mistrovství světa, Euroliga s&nbsp;USK Praha, tituly s&nbsp;Brnem i&nbsp;Prahou. Za tu dobu jsem si prošla vším: dřinou, zraněními i&nbsp;tréninky, které mě posunuly nejvíc.</p>
         <p>Ke každé hráčce a&nbsp;hráči přistupuju podle toho, co reálně potřebuje, ne podle univerzálního plánu. Hráčkám a&nbsp;hráčům ligových týmů nabízím přípravu podle postu — specializace pivot.</p>
         <p>Na prvním tréninku se hlavně dívám — jak hráčka nebo hráč střílí, dribluje a&nbsp;jak se pohybuje. Podle toho si nastavíme, na čem budeme pracovat. Po každém tréninku shrnu, co jsme dělali, a&nbsp;přidám pár cvičení na doma.</p>
       </div>
-      <ul class="pills about__pills">
+      <ul class="pills about__pills" data-reveal-group>
         <li>Reprezentace ČR</li>
         <li>OH Londýn 2012</li>
         <li>Vítězka Euroligy</li>
@@ -149,41 +213,118 @@
   </div>
 </section>
 
-<section class="section section--white" id="media">
+<!-- =====================================================================
+     4. Kariéra — časová osa (na desktopu se posouvá do strany)
+     ===================================================================== -->
+<section class="career" id="kariera" aria-labelledby="kariera-title" data-scroll="career">
+  <div class="career__pin">
+    <div class="container career__head">
+      <p class="kicker" data-reveal>Kariéra</p>
+      <h2 id="kariera-title" data-split>Od Londýna 2012 po mistrovství světa 2026</h2>
+    </div>
+
+    <div class="career__viewport">
+      <div class="career__rail" aria-hidden="true"><span class="career__rail-fill"></span></div>
+      <ol class="career__track">
+        <li class="career__event">
+          <time class="career__year" datetime="2012">2012</time>
+          <h3>OH Londýn 2012</h3>
+          <p>Olympijská účast v&nbsp;Londýně.</p>
+        </li>
+        <li class="career__event">
+          <time class="career__year" datetime="2014">2014</time>
+          <h3>Mistrovství světa</h3>
+          <p>První ze dvou mistrovství světa.</p>
+        </li>
+        <li class="career__event career__event--gold">
+          <time class="career__year" datetime="2015">2015</time>
+          <h3>Vítězka Euroligy</h3>
+          <p>Vítězka 2015 s&nbsp;USK Praha.</p>
+        </li>
+        <li class="career__event career__event--wide">
+          <span class="career__year">Celou kariéru</span>
+          <ul class="career__chips">
+            <li><strong>8×</strong> mistryně české ligy</li>
+            <li><strong>2×</strong> Basketbalistka roku (2. místo)</li>
+            <li>Tituly s&nbsp;Brnem i&nbsp;Prahou</li>
+            <li>Reprezentace ČR</li>
+          </ul>
+        </li>
+        <li class="career__event">
+          <time class="career__year" datetime="2024">2023/24</time>
+          <h3>Nejlepší střelkyně ŽBL</h3>
+          <p>Nejlepší střelkyně ŽBL 2023/24.</p>
+        </li>
+        <li class="career__event career__event--points">
+          <time class="career__year" datetime="2025-03">březen 2025</time>
+          <h3><span class="career__points-num" data-count="5000">5&nbsp;000</span> bodů v&nbsp;české lize</h3>
+          <p>Teprve desátá hráčka v&nbsp;historii soutěže, která hranici překonala.</p>
+          <!-- 5 000 teček = 5 000 bodů. Kreslí se do canvasu, text výše je obsah. -->
+          <canvas class="dots" width="500" height="250" aria-hidden="true"></canvas>
+        </li>
+        <li class="career__event career__event--now">
+          <time class="career__year" datetime="2026">2026</time>
+          <h3>Mistrovství světa v&nbsp;Berlíně</h3>
+          <p>Návrat na světový šampionát po dvanácti letech.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     5. Média
+     ===================================================================== -->
+<section class="section section--white media" id="media">
   <div class="container">
     <div class="section__head">
-      <p class="kicker">Napsali o&nbsp;mně</p>
-      <h2>Kariéra, o&nbsp;které psala média</h2>
-      <p class="lead">Od olympiády v&nbsp;Londýně přes vítězství v&nbsp;Eurolize po pět tisíc bodů v&nbsp;české lize a&nbsp;mistrovství světa 2026. Výběr toho, co o&nbsp;mně vyšlo.</p>
+      <p class="kicker" data-reveal>Napsali o&nbsp;mně</p>
+      <h2 data-split>Kariéra, o&nbsp;které psala média</h2>
+      <p class="lead" data-reveal>Od olympiády v&nbsp;Londýně přes vítězství v&nbsp;Eurolize po pět tisíc bodů v&nbsp;české lize a&nbsp;mistrovství světa 2026. Výběr toho, co o&nbsp;mně vyšlo.</p>
     </div>
+  </div>
 
-    <div class="media-logos">
-      <a href="https://sport.ceskatelevize.cz/clanek/basketbal/zabojuju-o-nominaci-a-uvidime-jak-to-dopadne-rika-hanusova-k-ms-158408" target="_blank" rel="noopener"><img src="/assets/icons/media/ct-sport.png?v=2026-09" width="357" height="80" loading="lazy" alt="ČT sport" data-h="34"></a>
-      <a href="https://isport.blesk.cz/clanek/ostatni-basketbal/479533/basketbalistky-konci-na-ms-uz-po-zakladni-skupine-strasne-nas-to-mrzi-smutnila-hanusova.html" target="_blank" rel="noopener"><img src="/assets/icons/media/isport.svg?v=2026-09" width="179" height="80" loading="lazy" alt="iSport" data-h="34"></a>
-      <a href="https://www.ceskenoviny.cz/zpravy/bojovaly-jsme-az-do-konce-rekla-po-prohre-basketbalistek-s-cinou-hanusova/2870886" target="_blank" rel="noopener"><img src="/assets/icons/media/ctk.png?v=2026-09" width="150" height="22" loading="lazy" alt="ČTK" data-h="24"></a>
-      <a href="https://www.irozhlas.cz/" target="_blank" rel="noopener"><img src="/assets/icons/media/irozhlas.svg?v=2026-09" width="373" height="54" loading="lazy" alt="iROZHLAS" data-h="28"></a>
-      <a href="https://prazsky.denik.cz/basketbal/zenska-basketbalova-liga-nadstavba-brandys-nad-labem-slovanka-alena-hanusova/" target="_blank" rel="noopener"><img src="/assets/icons/media/denik.svg?v=2026-09" width="713" height="213" loading="lazy" alt="Deník" data-h="26"></a>
-      <a href="https://zbl.basketball/" target="_blank" rel="noopener"><img src="/assets/icons/media/cz-basketball.png?v=2026-09" width="420" height="80" loading="lazy" alt="CZ Basketball" data-h="30"></a>
+  <div class="marquee" data-reveal>
+    <div class="marquee__track">
+      <div class="marquee__group">
+        <a href="https://sport.ceskatelevize.cz/clanek/basketbal/zabojuju-o-nominaci-a-uvidime-jak-to-dopadne-rika-hanusova-k-ms-158408" target="_blank" rel="noopener"><img src="/assets/icons/media/ct-sport.png?v=2026-09" width="357" height="80" loading="lazy" alt="ČT sport" style="--h: 34px"></a>
+        <a href="https://isport.blesk.cz/clanek/ostatni-basketbal/479533/basketbalistky-konci-na-ms-uz-po-zakladni-skupine-strasne-nas-to-mrzi-smutnila-hanusova.html" target="_blank" rel="noopener"><img src="/assets/icons/media/isport.svg?v=2026-09" width="179" height="80" loading="lazy" alt="iSport" style="--h: 34px"></a>
+        <a href="https://www.ceskenoviny.cz/zpravy/bojovaly-jsme-az-do-konce-rekla-po-prohre-basketbalistek-s-cinou-hanusova/2870886" target="_blank" rel="noopener"><img src="/assets/icons/media/ctk.png?v=2026-09" width="150" height="22" loading="lazy" alt="ČTK" style="--h: 24px"></a>
+        <a href="https://www.irozhlas.cz/" target="_blank" rel="noopener"><img src="/assets/icons/media/irozhlas.svg?v=2026-09" width="373" height="54" loading="lazy" alt="iROZHLAS" style="--h: 28px"></a>
+        <a href="https://prazsky.denik.cz/basketbal/zenska-basketbalova-liga-nadstavba-brandys-nad-labem-slovanka-alena-hanusova/" target="_blank" rel="noopener"><img src="/assets/icons/media/denik.svg?v=2026-09" width="713" height="213" loading="lazy" alt="Deník" style="--h: 26px"></a>
+        <a href="https://zbl.basketball/" target="_blank" rel="noopener"><img src="/assets/icons/media/cz-basketball.png?v=2026-09" width="420" height="80" loading="lazy" alt="CZ Basketball" style="--h: 30px"></a>
+      </div>
+      <!-- druhá kopie jen kvůli plynulé smyčce -->
+      <div class="marquee__group" aria-hidden="true">
+        <a href="https://sport.ceskatelevize.cz/clanek/basketbal/zabojuju-o-nominaci-a-uvidime-jak-to-dopadne-rika-hanusova-k-ms-158408" target="_blank" rel="noopener" tabindex="-1"><img src="/assets/icons/media/ct-sport.png?v=2026-09" width="357" height="80" loading="lazy" alt="" style="--h: 34px"></a>
+        <a href="https://isport.blesk.cz/clanek/ostatni-basketbal/479533/basketbalistky-konci-na-ms-uz-po-zakladni-skupine-strasne-nas-to-mrzi-smutnila-hanusova.html" target="_blank" rel="noopener" tabindex="-1"><img src="/assets/icons/media/isport.svg?v=2026-09" width="179" height="80" loading="lazy" alt="" style="--h: 34px"></a>
+        <a href="https://www.ceskenoviny.cz/zpravy/bojovaly-jsme-az-do-konce-rekla-po-prohre-basketbalistek-s-cinou-hanusova/2870886" target="_blank" rel="noopener" tabindex="-1"><img src="/assets/icons/media/ctk.png?v=2026-09" width="150" height="22" loading="lazy" alt="" style="--h: 24px"></a>
+        <a href="https://www.irozhlas.cz/" target="_blank" rel="noopener" tabindex="-1"><img src="/assets/icons/media/irozhlas.svg?v=2026-09" width="373" height="54" loading="lazy" alt="" style="--h: 28px"></a>
+        <a href="https://prazsky.denik.cz/basketbal/zenska-basketbalova-liga-nadstavba-brandys-nad-labem-slovanka-alena-hanusova/" target="_blank" rel="noopener" tabindex="-1"><img src="/assets/icons/media/denik.svg?v=2026-09" width="713" height="213" loading="lazy" alt="" style="--h: 26px"></a>
+        <a href="https://zbl.basketball/" target="_blank" rel="noopener" tabindex="-1"><img src="/assets/icons/media/cz-basketball.png?v=2026-09" width="420" height="80" loading="lazy" alt="" style="--h: 30px"></a>
+      </div>
     </div>
+  </div>
 
-    <div class="articles">
+  <div class="container">
+    <div class="articles" data-reveal-group>
       <a class="article-card" href="https://sport.ceskatelevize.cz/clanek/basketbal/zabojuju-o-nominaci-a-uvidime-jak-to-dopadne-rika-hanusova-k-ms-158408" target="_blank" rel="noopener">
         <p class="article-card__meta">ČT sport · srpen 2026</p>
         <h3>Zabojuju o&nbsp;nominaci a&nbsp;uvidíme, jak to dopadne, říká Hanušová k&nbsp;MS</h3>
         <p class="article-card__text">Rozhovor před mistrovstvím světa v&nbsp;Berlíně — návrat na světový šampionát po dvanácti letech.</p>
-        <span class="article-card__more" aria-hidden="true">Číst článek →</span>
+        <span class="article-card__more" aria-hidden="true">Číst článek <span class="article-card__arrow">→</span></span>
       </a>
       <a class="article-card" href="https://zbl.basketball/je-to-neuveritelne-priznava-hanusova/18984" target="_blank" rel="noopener">
         <p class="article-card__meta">ŽBL.basketball · březen 2025</p>
         <h3>Je to neuvěřitelné, přiznává Hanušová</h3>
         <p class="article-card__text">Pět tisíc bodů v&nbsp;české lize. Teprve desátá hráčka v&nbsp;historii soutěže, která hranici překonala.</p>
-        <span class="article-card__more" aria-hidden="true">Číst článek →</span>
+        <span class="article-card__more" aria-hidden="true">Číst článek <span class="article-card__arrow">→</span></span>
       </a>
       <a class="article-card" href="https://isport.blesk.cz/clanek/ostatni-basketbal/479533/basketbalistky-konci-na-ms-uz-po-zakladni-skupine-strasne-nas-to-mrzi-smutnila-hanusova.html" target="_blank" rel="noopener">
         <p class="article-card__meta">iSport.cz · září 2026</p>
         <h3>Strašně nás to mrzí, smutnila Hanušová</h3>
         <p class="article-card__text">Reportáž z&nbsp;posledního reprezentačního turnaje: jak ubránila 223&nbsp;cm vysokou nejvyšší basketbalistku historie.</p>
-        <span class="article-card__more" aria-hidden="true">Číst článek →</span>
+        <span class="article-card__more" aria-hidden="true">Číst článek <span class="article-card__arrow">→</span></span>
       </a>
     </div>
 
@@ -199,81 +340,216 @@
   </div>
 </section>
 
-<section class="section section--page" id="treninky">
+<!-- =====================================================================
+     6. Tréninky — taktická tabule
+     ===================================================================== -->
+<section class="section section--board playbook" id="treninky">
   <div class="container">
     <div class="section__head">
-      <p class="kicker">Náplň tréninku</p>
-      <h2>Co trénujeme: střelba, driblink, obrana a&nbsp;herní myšlení</h2>
-      <p class="lead">Každý trénink stavím na tom, co hráčce nebo hráči nejvíc chybí. Tohle jsou oblasti, kterým se věnuju nejčastěji.</p>
+      <p class="kicker" data-reveal>Náplň tréninku</p>
+      <h2 data-split>Co trénujeme: střelba, driblink, obrana a&nbsp;herní myšlení</h2>
+      <p class="lead" data-reveal>Každý trénink stavím na tom, co hráčce nebo hráči nejvíc chybí. Tohle jsou oblasti, kterým se věnuju nejčastěji.</p>
     </div>
 
-    <div class="grid-cards grid-cards--3">
-      <article class="card">
-        <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-strelba"></use></svg></span>
-        <h3>Střelba</h3>
-        <p>Mechanika střely, střelba z&nbsp;pohybu, z&nbsp;driblingu i&nbsp;pod tlakem a&nbsp;únavou.</p>
-      </article>
-      <article class="card">
-        <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-driblink"></use></svg></span>
-        <h3>Driblink a&nbsp;ovládání míče</h3>
-        <p>Obě ruce, změny rytmu a&nbsp;směru, dribling se zvednutou hlavou.</p>
-      </article>
-      <article class="card">
-        <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-hra11"></use></svg></span>
-        <h3>Hra 1 na 1</h3>
-        <p>První krok, práce nohou, čtení obránce, zakončení pravou i&nbsp;levou.</p>
-      </article>
-      <article class="card">
-        <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-podkosem"></use></svg></span>
-        <h3>Hra pod košem</h3>
-        <p>Postoj a&nbsp;práce nohou pod košem, zakončení přes kontakt, doskok, clona a&nbsp;pick and roll. Moje domácí půda.</p>
-      </article>
-      <article class="card">
-        <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-mysleni"></use></svg></span>
-        <h3>Herní myšlení</h3>
-        <p>Čtení situace, rozhodování ve vteřině, klid a&nbsp;sebevědomí na hřišti.</p>
-      </article>
-      <article class="card">
-        <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-sila"></use></svg></span>
-        <h3>Síla a&nbsp;kondice</h3>
-        <p>Zpevnění středu těla, správné dopady a&nbsp;práce s&nbsp;vlastní vahou.</p>
-      </article>
+    <div class="playbook__grid">
+      <div class="playbook__list">
+        <article class="play" data-play="strelba">
+          <span class="play__num" aria-hidden="true">01</span>
+          <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-strelba"></use></svg></span>
+          <h3 class="play__title"><button class="play__btn" type="button" aria-pressed="false" aria-controls="playbook-court">Střelba</button></h3>
+          <p>Mechanika střely, střelba z&nbsp;pohybu, z&nbsp;driblingu i&nbsp;pod tlakem a&nbsp;únavou.</p>
+        </article>
+        <article class="play" data-play="driblink">
+          <span class="play__num" aria-hidden="true">02</span>
+          <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-driblink"></use></svg></span>
+          <h3 class="play__title"><button class="play__btn" type="button" aria-pressed="false" aria-controls="playbook-court">Driblink a&nbsp;ovládání míče</button></h3>
+          <p>Obě ruce, změny rytmu a&nbsp;směru, dribling se zvednutou hlavou.</p>
+        </article>
+        <article class="play" data-play="hra11">
+          <span class="play__num" aria-hidden="true">03</span>
+          <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-hra11"></use></svg></span>
+          <h3 class="play__title"><button class="play__btn" type="button" aria-pressed="false" aria-controls="playbook-court">Hra 1 na 1</button></h3>
+          <p>První krok, práce nohou, čtení obránce, zakončení pravou i&nbsp;levou.</p>
+        </article>
+        <article class="play" data-play="podkosem">
+          <span class="play__num" aria-hidden="true">04</span>
+          <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-podkosem"></use></svg></span>
+          <h3 class="play__title"><button class="play__btn" type="button" aria-pressed="false" aria-controls="playbook-court">Hra pod košem</button></h3>
+          <p>Postoj a&nbsp;práce nohou pod košem, zakončení přes kontakt, doskok, clona a&nbsp;pick and roll. Moje domácí půda.</p>
+        </article>
+        <article class="play" data-play="mysleni">
+          <span class="play__num" aria-hidden="true">05</span>
+          <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-mysleni"></use></svg></span>
+          <h3 class="play__title"><button class="play__btn" type="button" aria-pressed="false" aria-controls="playbook-court">Herní myšlení</button></h3>
+          <p>Čtení situace, rozhodování ve vteřině, klid a&nbsp;sebevědomí na hřišti.</p>
+        </article>
+        <article class="play" data-play="sila">
+          <span class="play__num" aria-hidden="true">06</span>
+          <span class="icon-tile"><svg aria-hidden="true" focusable="false"><use href="#i-sila"></use></svg></span>
+          <h3 class="play__title"><button class="play__btn" type="button" aria-pressed="false" aria-controls="playbook-court">Síla a&nbsp;kondice</button></h3>
+          <p>Zpevnění středu těla, správné dopady a&nbsp;práce s&nbsp;vlastní vahou.</p>
+        </article>
+      </div>
+
+      <figure class="playbook__board" id="playbook-court">
+        <svg class="court" viewBox="0 0 1500 1400" role="img" aria-labelledby="court-caption" focusable="false">
+          <rect class="court__paint" x="505" y="0" width="490" height="580"/>
+          <use class="court__lines" href="#court-lines"/>
+
+          <!-- 01 Střelba: čtyři pozice, oblouky na koš -->
+          <g class="diagram" data-diagram="strelba">
+            <path id="shot-a" class="d-draw d-dot" pathLength="1" style="--d: .1s" d="M150 190Q420 30 728 146"/>
+            <path id="shot-b" class="d-draw d-dot" pathLength="1" style="--d: .5s" d="M1170 640Q1090 250 772 172"/>
+            <path id="shot-c" class="d-draw d-dot" pathLength="1" style="--d: .9s" d="M750 990Q610 560 748 186"/>
+            <path id="shot-d" class="d-draw d-dot" pathLength="1" style="--d: 1.3s" d="M470 600Q470 290 732 170"/>
+            <g class="d-pop" style="--d: 0s"><circle class="d-o" cx="150" cy="190" r="36"/><text class="d-label" x="150" y="290" text-anchor="middle">z pohybu</text></g>
+            <g class="d-pop" style="--d: .4s"><circle class="d-o" cx="1170" cy="640" r="36"/><text class="d-label" x="1170" y="740" text-anchor="middle">z driblingu</text></g>
+            <g class="d-pop" style="--d: .8s"><circle class="d-o" cx="750" cy="990" r="36"/><text class="d-label" x="750" y="1090" text-anchor="middle">pod tlakem</text></g>
+            <g class="d-pop" style="--d: 1.2s"><circle class="d-o" cx="470" cy="600" r="36"/><text class="d-label" x="360" y="700" text-anchor="middle">a únavou</text></g>
+            <circle class="d-ball" r="20" data-path="#shot-a" data-delay="0.3" data-dur="0.9"/>
+            <circle class="d-ball" r="20" data-path="#shot-b" data-delay="0.7" data-dur="0.9"/>
+            <circle class="d-ball" r="20" data-path="#shot-c" data-delay="1.1" data-dur="0.9"/>
+            <circle class="d-ball" r="20" data-path="#shot-d" data-delay="1.5" data-dur="0.9"/>
+            <circle class="d-ripple" cx="750" cy="157.5" r="40" style="--d: 1.2s"/>
+          </g>
+
+          <!-- 02 Driblink: klikatá čára = dribling (notace z taktických tabulí) -->
+          <g class="diagram" data-diagram="driblink">
+            <path id="dribble-base" class="d-guide" d="M330 1270C760 1160 300 920 690 780S960 430 780 250"/>
+            <path class="d-draw d-zigzag" pathLength="1" style="--d: .2s; --dur: 2.2s" data-zigzag="#dribble-base" marker-end="url(#arrow)"/>
+            <g class="d-pop" style="--d: 0s"><circle class="d-o d-o--ball" cx="330" cy="1270" r="38"/></g>
+            <g class="d-pop" style="--d: .8s"><text class="d-label" x="620" y="1150">pravá</text></g>
+            <g class="d-pop" style="--d: 1.3s"><text class="d-label" x="330" y="930">levá</text></g>
+            <g class="d-pop" style="--d: 1.8s"><text class="d-label" x="960" y="620">změna směru</text></g>
+            <g class="d-pop" style="--d: 2.3s"><text class="d-label" x="860" y="250">hlava nahoře</text></g>
+            <circle class="d-ball" r="22" data-path="#dribble-base" data-delay="0.2" data-dur="2.2"/>
+          </g>
+
+          <!-- 03 Hra 1 na 1: útočník O, obránce X, první krok kolem něj -->
+          <g class="diagram" data-diagram="hra11">
+            <path id="drive" class="d-guide" d="M1090 840C1210 650 1010 390 792 188"/>
+            <path class="d-draw" pathLength="1" style="--d: .2s" d="M1090 840l70-70" marker-end="url(#arrow)"/>
+            <path class="d-draw d-zigzag" pathLength="1" style="--d: .9s; --dur: 1.4s" data-zigzag="#drive" marker-end="url(#arrow)"/>
+            <path class="d-draw d-dash" pathLength="1" style="--d: 1.3s" d="M990 700l70-90" marker-end="url(#arrow)"/>
+            <g class="d-pop" style="--d: 0s"><circle class="d-o d-o--ball" cx="1090" cy="840" r="38"/></g>
+            <g class="d-pop" style="--d: .1s"><path class="d-x" d="M958 668l64 64M1022 668l-64 64"/></g>
+            <g class="d-pop" style="--d: .5s"><text class="d-label" x="1210" y="900">první krok</text></g>
+            <g class="d-pop" style="--d: 1.1s"><text class="d-label" x="720" y="660">čtení obránce</text></g>
+            <g class="d-pop" style="--d: 2.1s"><text class="d-label" x="900" y="300">zakončení</text></g>
+            <circle class="d-ball" r="22" data-path="#drive" data-delay="0.9" data-dur="1.4"/>
+            <circle class="d-ripple" cx="750" cy="157.5" r="40" style="--d: 2.2s"/>
+          </g>
+
+          <!-- 04 Hra pod košem: vymalovaná zóna, otočka od hráče, clona a pick and roll, doskok -->
+          <g class="diagram" data-diagram="podkosem">
+            <rect class="d-paint" x="505" y="0" width="490" height="580" style="--d: 0s"/>
+            <path id="post-move" class="d-draw" pathLength="1" style="--d: .4s" d="M585 360Q548 210 716 164" marker-end="url(#arrow)"/>
+            <path class="d-draw d-screen" pathLength="1" style="--d: 1s" d="M905 820l-64-64M808 788l66-66"/>
+            <path class="d-draw d-zigzag" pathLength="1" style="--d: 1.3s; --dur: 1s" data-zigzag="#pnr-ball" marker-end="url(#arrow)"/>
+            <path id="pnr-ball" class="d-guide" d="M760 960C900 900 1060 820 1150 700"/>
+            <path id="roll" class="d-draw" pathLength="1" style="--d: 1.9s" d="M880 790Q860 460 772 192" marker-end="url(#arrow)"/>
+            <g class="d-pop" style="--d: .1s"><circle class="d-o d-o--ball" cx="585" cy="360" r="38"/></g>
+            <g class="d-pop" style="--d: .8s"><circle class="d-o" cx="905" cy="820" r="38"/></g>
+            <g class="d-pop" style="--d: .8s"><circle class="d-o" cx="760" cy="960" r="38"/></g>
+            <g class="d-pop" style="--d: .6s"><text class="d-label" x="70" y="470">zakončení přes kontakt</text></g>
+            <g class="d-pop" style="--d: 1.2s"><text class="d-label" x="1010" y="960">clona</text></g>
+            <g class="d-pop" style="--d: 2s"><text class="d-label" x="1180" y="620">pick and roll</text></g>
+            <g class="d-pop" style="--d: 2.4s"><circle class="d-ring" cx="750" cy="157.5" r="110"/><text class="d-label" x="920" y="80">doskok</text></g>
+            <circle class="d-ball" r="22" data-path="#post-move" data-delay="0.4" data-dur="0.8"/>
+          </g>
+
+          <!-- 05 Herní myšlení: čtyři možnosti přihrávky, jedna volba, vteřina na rozhodnutí -->
+          <g class="diagram" data-diagram="mysleni">
+            <path class="d-draw d-dash d-option" pathLength="1" style="--d: .3s" d="M720 970L262 700"/>
+            <path class="d-draw d-dash d-option" pathLength="1" style="--d: .5s" d="M780 970L1238 700"/>
+            <path class="d-draw d-dash d-option" pathLength="1" style="--d: .7s" d="M700 980L170 200"/>
+            <path id="pass-pick" class="d-draw d-dash d-choice" pathLength="1" style="--d: 1.5s" d="M770 960L990 380" marker-end="url(#arrow)"/>
+            <circle class="d-timer" cx="750" cy="1000" r="62" pathLength="1" style="--d: .3s"/>
+            <g class="d-pop" style="--d: 0s"><circle class="d-o d-o--ball" cx="750" cy="1000" r="38"/></g>
+            <g class="d-pop" style="--d: .1s"><circle class="d-o" cx="230" cy="680" r="36"/></g>
+            <g class="d-pop" style="--d: .1s"><circle class="d-o" cx="1270" cy="680" r="36"/></g>
+            <g class="d-pop" style="--d: .1s"><circle class="d-o" cx="150" cy="170" r="36"/></g>
+            <g class="d-pop" style="--d: .1s"><circle class="d-o" cx="1000" cy="340" r="36"/></g>
+            <g class="d-pop" style="--d: .2s"><path class="d-x" d="M286 604l52 52M338 604l-52 52"/></g>
+            <g class="d-pop" style="--d: .2s"><path class="d-x" d="M1162 604l52 52M1214 604l-52 52"/></g>
+            <g class="d-pop" style="--d: .2s"><path class="d-x" d="M200 262l52 52M252 262l-52 52"/></g>
+            <g class="d-pop" style="--d: .4s"><text class="d-label" x="860" y="1110">rozhodování ve vteřině</text></g>
+            <g class="d-pop" style="--d: 1.8s"><text class="d-label" x="1060" y="300">čtení situace</text></g>
+            <circle class="d-ball" r="20" data-path="#pass-pick" data-delay="1.7" data-dur="0.6"/>
+          </g>
+
+          <!-- 06 Síla a kondice: kužely, obranný pohyb, dopady -->
+          <g class="diagram" data-diagram="sila">
+            <path id="slides" class="d-draw" pathLength="1" style="--d: .5s; --dur: 2.4s" d="M420 1230L1080 1090L420 950L1080 810L420 670L1080 530" marker-end="url(#arrow)"/>
+            <g class="d-pop" style="--d: 0s"><path class="d-cone" d="M420 1200l-26 50h52z"/></g>
+            <g class="d-pop" style="--d: .05s"><path class="d-cone" d="M1080 1060l-26 50h52z"/></g>
+            <g class="d-pop" style="--d: .1s"><path class="d-cone" d="M420 920l-26 50h52z"/></g>
+            <g class="d-pop" style="--d: .15s"><path class="d-cone" d="M1080 780l-26 50h52z"/></g>
+            <g class="d-pop" style="--d: .2s"><path class="d-cone" d="M420 640l-26 50h52z"/></g>
+            <g class="d-pop" style="--d: .25s"><path class="d-cone" d="M1080 500l-26 50h52z"/></g>
+            <g class="d-pop d-land" style="--d: 2.9s"><ellipse class="d-foot" cx="1150" cy="400" rx="22" ry="44"/><ellipse class="d-foot" cx="1220" cy="400" rx="22" ry="44"/><circle class="d-ring" cx="1185" cy="400" r="100"/></g>
+            <g class="d-pop" style="--d: .6s"><text class="d-label" x="130" y="1330">střed těla</text></g>
+            <g class="d-pop" style="--d: 1.6s"><text class="d-label" x="1150" y="880">vlastní váha</text></g>
+            <g class="d-pop" style="--d: 3s"><text class="d-label" x="1060" y="270">správné dopady</text></g>
+            <circle class="d-ball d-ball--player" r="26" data-path="#slides" data-delay="0.5" data-dur="2.4"/>
+          </g>
+        </svg>
+        <figcaption class="playbook__caption" id="court-caption">
+          <span class="playbook__caption-label">Taktická tabule</span>
+          <span class="playbook__caption-title" aria-live="polite">Střelba</span>
+        </figcaption>
+      </figure>
     </div>
   </div>
 </section>
 
-<section class="section section--white" id="pro-koho">
+<!-- =====================================================================
+     7. Pro koho — věkové rozpětí jako graf
+     ===================================================================== -->
+<section class="section section--paper audience" id="pro-koho">
   <div class="container">
     <div class="section__head">
-      <p class="kicker">Pro koho</p>
-      <h2>Basketbalové tréninky od 10&nbsp;let až po ligové hráčky a&nbsp;hráče</h2>
-      <p class="lead">Individuální trénink je doplněk ke klubu, ne jeho náhrada. Rozhoduje to, kde hráčka nebo hráč je a&nbsp;kam chce — věk je jen orientační.</p>
+      <p class="kicker" data-reveal>Pro koho</p>
+      <h2 data-split>Basketbalové tréninky od 10&nbsp;let až po ligové hráčky a&nbsp;hráče</h2>
+      <p class="lead" data-reveal>Individuální trénink je doplněk ke klubu, ne jeho náhrada. Rozhoduje to, kde hráčka nebo hráč je a&nbsp;kam chce — věk je jen orientační.</p>
     </div>
 
-    <div class="grid-cards">
-      <article class="card">
-        <span class="age-badge" aria-hidden="true">10–13</span>
-        <h3><span class="visually-hidden">10–13 · </span>Základy správně</h3>
-        <p>Začátečník nebo dítě z&nbsp;přípravky a&nbsp;klubu. Dribling obouruč, práce nohou a&nbsp;mechanika střely, než se zafixují chyby — v&nbsp;deseti letech už má dítě sílu na správnou střelbu a&nbsp;ještě se nic neodnaučuje.</p>
+    <div class="ages" data-reveal-group>
+      <div class="ages__axis" aria-hidden="true">
+        <span style="--at: 10">10</span><span style="--at: 12">12</span><span style="--at: 14">14</span><span style="--at: 16">16</span><span style="--at: 18">18</span><span style="--at: 20">20</span><span style="--at: 22">22</span><span class="ages__axis-end" style="--at: 24">let →</span>
+      </div>
+
+      <article class="age-row" style="--from: 10; --to: 13">
+        <div class="age-row__chart" aria-hidden="true"><span class="age-row__bar"><span class="age-badge">10–13</span></span></div>
+        <div class="age-row__body">
+          <h3><span class="visually-hidden">10–13 · </span>Základy správně</h3>
+          <p>Začátečník nebo dítě z&nbsp;přípravky a&nbsp;klubu. Dribling obouruč, práce nohou a&nbsp;mechanika střely, než se zafixují chyby — v&nbsp;deseti letech už má dítě sílu na správnou střelbu a&nbsp;ještě se nic neodnaučuje.</p>
+        </div>
       </article>
-      <article class="card">
-        <span class="age-badge" aria-hidden="true">12–18</span>
-        <h3><span class="visually-hidden">12–18 · </span>Klubová hráčka nebo hráč, kteří chtějí víc</h3>
-        <p>Hraje soutěž a&nbsp;chce víc minut. Konkrétní slabiny ze zápasů, hra 1 na 1, čtení hry. Cíl je jednoduchý: místo v&nbsp;základní pětce.</p>
+      <article class="age-row" style="--from: 12; --to: 18">
+        <div class="age-row__chart" aria-hidden="true"><span class="age-row__bar"><span class="age-badge">12–18</span></span></div>
+        <div class="age-row__body">
+          <h3><span class="visually-hidden">12–18 · </span>Klubová hráčka nebo hráč, kteří chtějí víc</h3>
+          <p>Hraje soutěž a&nbsp;chce víc minut. Konkrétní slabiny ze zápasů, hra 1 na 1, čtení hry. Cíl je jednoduchý: místo v&nbsp;základní pětce.</p>
+        </div>
       </article>
-      <article class="card">
-        <span class="age-badge" aria-hidden="true">16+</span>
-        <h3><span class="visually-hidden">16+ · </span>Výkonnostní a&nbsp;profesionální hráčky a&nbsp;hráči</h3>
-        <p>Dorost s&nbsp;ambicemi, výběry, hráčky a&nbsp;hráči ligových týmů. Příprava na sezónu a&nbsp;práce mimo ni, trénink podle postu. Specializace pivot a&nbsp;křídlo: hra zády ke koši, práce nohou pod košem, zakončení přes kontakt, doskok, clona a&nbsp;pick and roll. Trénuju to, co jsem sama hrála šestnáct sezon na nejvyšší úrovni.</p>
+      <article class="age-row age-row--open" style="--from: 16; --to: 24.6">
+        <div class="age-row__chart" aria-hidden="true"><span class="age-row__bar"><span class="age-badge">16+</span></span></div>
+        <div class="age-row__body">
+          <h3><span class="visually-hidden">16+ · </span>Výkonnostní a&nbsp;profesionální hráčky a&nbsp;hráči</h3>
+          <p>Dorost s&nbsp;ambicemi, výběry, hráčky a&nbsp;hráči ligových týmů. Příprava na sezónu a&nbsp;práce mimo ni, trénink podle postu. Specializace pivot a&nbsp;křídlo: hra zády ke koši, práce nohou pod košem, zakončení přes kontakt, doskok, clona a&nbsp;pick and roll. Trénuju to, co jsem sama hrála šestnáct sezon na nejvyšší úrovni.</p>
+        </div>
       </article>
-      <article class="card">
-        <span class="age-badge" aria-hidden="true">20+</span>
-        <h3><span class="visually-hidden">20+ · </span>Dospělí a&nbsp;hobby hráčky i&nbsp;hráči</h3>
-        <p>Amatérská liga, firemní turnaje, nebo návrat k&nbsp;basketu po letech. Jistota s&nbsp;míčem, střelba a&nbsp;kondice — klidně brzo ráno nebo večer, v&nbsp;hale i&nbsp;venku.</p>
+      <article class="age-row age-row--open" style="--from: 20; --to: 24.6">
+        <div class="age-row__chart" aria-hidden="true"><span class="age-row__bar"><span class="age-badge">20+</span></span></div>
+        <div class="age-row__body">
+          <h3><span class="visually-hidden">20+ · </span>Dospělí a&nbsp;hobby hráčky i&nbsp;hráči</h3>
+          <p>Amatérská liga, firemní turnaje, nebo návrat k&nbsp;basketu po letech. Jistota s&nbsp;míčem, střelba a&nbsp;kondice — klidně brzo ráno nebo večer, v&nbsp;hale i&nbsp;venku.</p>
+        </div>
       </article>
     </div>
 
-    <div class="strip audience__strip">
+    <div class="strip strip--red audience__strip" data-reveal>
       <p class="strip__figure">Pro kluby</p>
       <div class="strip__body">
         <h3>Skills blok pro celý mládežnický tým nebo tréninkový den pro pivoty</h3>
@@ -281,69 +557,79 @@
       </div>
     </div>
 
-    <p class="audience__note">Trénuju holky i&nbsp;kluky.</p>
+    <p class="audience__note" data-reveal>Trénuju holky i&nbsp;kluky.</p>
   </div>
 </section>
 
-<section class="section section--ink" id="prubeh">
+<!-- =====================================================================
+     8. Jak to probíhá — přihrávky mezi čtyřmi kroky
+     ===================================================================== -->
+<section class="section section--ink process" id="prubeh" data-scroll="process">
   <div class="container">
     <div class="section__head">
-      <p class="kicker">Průběh</p>
-      <h2>Jak probíhá individuální trénink</h2>
-      <p class="lead">Žádná registrace ani složité objednávání. Stačí napsat.</p>
+      <p class="kicker" data-reveal>Průběh</p>
+      <h2 data-split>Jak probíhá individuální trénink</h2>
+      <p class="lead" data-reveal>Žádná registrace ani složité objednávání. Stačí napsat.</p>
     </div>
 
-    <ol class="steps">
-      <li class="steps__item">
-        <span class="steps__num" aria-hidden="true">1</span>
-        <h3>Napíšeš mi</h3>
-        <p>Na WhatsApp nebo e-mail. Napište věk hráčky nebo hráče, kde hraje a&nbsp;co byste chtěli zlepšit.</p>
-      </li>
-      <li class="steps__item">
-        <span class="steps__num" aria-hidden="true">2</span>
-        <h3>Domluvíme detaily</h3>
-        <p>Krátce si zavoláme nebo dopíšeme — cíl, počet tréninků, termín a&nbsp;kde se sejdeme.</p>
-      </li>
-      <li class="steps__item">
-        <span class="steps__num" aria-hidden="true">3</span>
-        <h3>První trénink</h3>
-        <p>Zmapuju, co hráčka nebo hráč umí a&nbsp;kde má rezervy, a&nbsp;hned začneme pracovat. Rodiče se můžou dívat.</p>
-      </li>
-      <li class="steps__item">
-        <span class="steps__num" aria-hidden="true">4</span>
-        <h3>Zpětná vazba</h3>
-        <p>Po tréninku řeknu, na čem stojíme, a&nbsp;dám cvičení, která se dají dělat i&nbsp;doma.</p>
-      </li>
-    </ol>
+    <div class="process__field">
+      <svg class="process__path" aria-hidden="true" focusable="false"><path class="process__path-base"/><path class="process__path-line" pathLength="1"/></svg>
+      <span class="process__ball ball-sprite" aria-hidden="true"></span>
+      <ol class="steps">
+        <li class="steps__item">
+          <span class="steps__num" aria-hidden="true">1</span>
+          <h3>Napíšeš mi</h3>
+          <p>Na WhatsApp nebo e-mail. Napište věk hráčky nebo hráče, kde hraje a&nbsp;co byste chtěli zlepšit.</p>
+        </li>
+        <li class="steps__item">
+          <span class="steps__num" aria-hidden="true">2</span>
+          <h3>Domluvíme detaily</h3>
+          <p>Krátce si zavoláme nebo dopíšeme — cíl, počet tréninků, termín a&nbsp;kde se sejdeme.</p>
+        </li>
+        <li class="steps__item">
+          <span class="steps__num" aria-hidden="true">3</span>
+          <h3>První trénink</h3>
+          <p>Zmapuju, co hráčka nebo hráč umí a&nbsp;kde má rezervy, a&nbsp;hned začneme pracovat. Rodiče se můžou dívat.</p>
+        </li>
+        <li class="steps__item">
+          <span class="steps__num" aria-hidden="true">4</span>
+          <h3>Zpětná vazba</h3>
+          <p>Po tréninku řeknu, na čem stojíme, a&nbsp;dám cvičení, která se dají dělat i&nbsp;doma.</p>
+        </li>
+      </ol>
+    </div>
   </div>
 </section>
 
-<section class="section section--page" id="cenik">
+<!-- =====================================================================
+     9. Ceník + kalkulačka
+     ===================================================================== -->
+<section class="section section--paper pricing-section" id="cenik">
   <div class="container">
     <div class="section__head">
-      <p class="kicker">Ceník</p>
-      <h2>Ceník individuálních tréninků</h2>
-      <p class="lead">Jedna cena za 60&nbsp;minut včetně tělocvičny. Žádné balíčky ani předplatné — platíte jen tréninky, které proběhnou.</p>
+      <p class="kicker" data-reveal>Ceník</p>
+      <h2 data-split>Ceník individuálních tréninků</h2>
+      <p class="lead" data-reveal>Jedna cena za 60&nbsp;minut včetně tělocvičny. Žádné balíčky ani předplatné — platíte jen tréninky, které proběhnou.</p>
     </div>
 
     <div class="pricing">
-      <article class="card card--ink price-card">
+      <article class="ticket ticket--ink" data-reveal>
         <h3>Individuální trénink</h3>
-        <p class="price-card__amount">1&nbsp;400&nbsp;Kč</p>
-        <p class="price-card__unit">za 60&nbsp;minut · jedna hráčka nebo hráč, jedna trenérka</p>
+        <p class="ticket__amount">1&nbsp;400&nbsp;Kč</p>
+        <p class="ticket__unit">za 60&nbsp;minut · jedna hráčka nebo hráč, jedna trenérka</p>
         <ul class="ticks">
           <li>Cena zahrnuje trenérku i&nbsp;pronájem tělocvičny</li>
           <li>Plán tréninku podle toho, co hráčce či hráči chybí</li>
           <li>Zpětná vazba a&nbsp;cvičení domů po každém tréninku</li>
           <li>Bez balíčků a&nbsp;bez závazku na další termíny</li>
         </ul>
-        <a class="btn btn--primary" href="#kontakt">Domluvit trénink</a>
+        <a class="btn btn--primary" href="#kontakt">Domluvit trénink <span class="btn__arrow" aria-hidden="true"></span></a>
       </article>
 
-      <article class="card price-card">
+      <article class="ticket" data-reveal style="--delay: .1s">
         <h3>Skupina 2–4 hráčů</h3>
-        <p class="price-card__amount">1&nbsp;700&nbsp;Kč</p>
-        <p class="price-card__unit">za 60&nbsp;minut pro celou skupinu · dělí se mezi hráče</p>
+        <p class="ticket__amount">1&nbsp;700&nbsp;Kč</p>
+        <p class="ticket__unit">za 60&nbsp;minut pro celou skupinu · dělí se mezi hráče</p>
         <ul class="ticks">
           <li>2 hráči — 850&nbsp;Kč na osobu</li>
           <li>3 hráči — 567&nbsp;Kč · 4 hráči — 425&nbsp;Kč na osobu</li>
@@ -352,9 +638,36 @@
         </ul>
         <a class="btn btn--secondary" href="#kontakt">Domluvit skupinu</a>
       </article>
+
+      <!-- Kalkulačka počítá jen z cen výše. Bez JavaScriptu je skrytá. -->
+      <div class="calc" id="calc" role="group" data-reveal style="--delay: .2s" aria-labelledby="calc-title">
+        <h3 class="calc__title" id="calc-title">Kolik to vyjde na hráče</h3>
+        <fieldset class="calc__players">
+          <legend>Počet hráčů</legend>
+          <label><input type="radio" name="hraci" value="1" checked><span>1</span></label>
+          <label><input type="radio" name="hraci" value="2"><span>2</span></label>
+          <label><input type="radio" name="hraci" value="3"><span>3</span></label>
+          <label><input type="radio" name="hraci" value="4"><span>4</span></label>
+        </fieldset>
+        <label class="calc__switch">
+          <input type="checkbox" name="hala" role="switch">
+          <span class="calc__switch-track" aria-hidden="true"></span>
+          <span>Vlastní hala nebo venku <strong>−300&nbsp;Kč</strong></span>
+        </label>
+        <div class="calc__bars" aria-hidden="true">
+          <span class="calc__bar" data-n="1"><span class="calc__bar-value"></span><span class="calc__bar-fill"></span><span class="calc__bar-label">1</span></span>
+          <span class="calc__bar" data-n="2"><span class="calc__bar-value"></span><span class="calc__bar-fill"></span><span class="calc__bar-label">2</span></span>
+          <span class="calc__bar" data-n="3"><span class="calc__bar-value"></span><span class="calc__bar-fill"></span><span class="calc__bar-label">3</span></span>
+          <span class="calc__bar" data-n="4"><span class="calc__bar-value"></span><span class="calc__bar-fill"></span><span class="calc__bar-label">4</span></span>
+        </div>
+        <output class="calc__result" aria-live="polite">
+          <span class="calc__per"><span class="calc__per-value">1&nbsp;400&nbsp;Kč</span> <span class="calc__per-label">na hráče</span></span>
+          <span class="calc__total">celkem 1&nbsp;400&nbsp;Kč za 60&nbsp;minut</span>
+        </output>
+      </div>
     </div>
 
-    <div class="strip pricing__strip">
+    <div class="strip pricing__strip" data-reveal>
       <p class="strip__figure">−300&nbsp;Kč</p>
       <div class="strip__body">
         <h3>Máte vlastní halu, nebo trénujeme venku?</h3>
@@ -362,23 +675,57 @@
       </div>
     </div>
 
-    <p class="note pricing__note">Platba převodem předem, storno zdarma do 24&nbsp;hodin před tréninkem. Pro starší hráče lze domluvit 90minutový trénink.</p>
+    <p class="note pricing__note" data-reveal>Platba převodem předem, storno zdarma do 24&nbsp;hodin před tréninkem. Pro starší hráče lze domluvit 90minutový trénink.</p>
   </div>
 </section>
 
-<section class="section section--white" id="praha-beroun">
+<!-- =====================================================================
+     10. Kde a kdy — interaktivní mapa (překreslená mapa z Figmy)
+     ===================================================================== -->
+<section class="section section--white where" id="praha-beroun">
   <div class="container where__grid">
-    <figure class="where__figure">
-      <img class="where__map" src="/assets/img/mapa.png?v=2026-09" width="560" height="400" loading="lazy" decoding="async"
-           alt="Schematická mapa: území Prahy a okruh 20 km kolem Berouna s obcemi, kam trenérka dojíždí">
+    <figure class="where__figure" data-reveal>
+      <svg class="map" id="map" viewBox="60 40 440 270" role="img" aria-labelledby="map-title" focusable="false">
+        <title id="map-title">Schematická mapa: území Prahy a okruh 20 km kolem Berouna s obcemi, kam trenérka dojíždí</title>
+        <path class="map__praha" d="M304 84L342.5 70L385 65L402.5 58L470 104L445 158.5L410 172.5L380 180L360 197.5L345 197.5L332.5 177.5L315 157.5L300 127.5Z"/>
+        <circle class="map__radius-fill" cx="210" cy="188.5" r="120"/>
+        <circle class="map__radius" cx="210" cy="188.5" r="120" pathLength="1"/>
+        <path class="map__river" d="M179 164L210 188.5L259.5 205.5L280 219L296 213.5L316 190.5L335 175M342.5 70L360 106.5L350 165L341 205"/>
+        <path class="map__road" d="M105 260L133.5 247.5L170 222.5L193 200L210 188.5L246.5 164.5L300 130"/>
+        <text class="map__tag map__tag--river" x="170" y="147">Berounka</text>
+        <text class="map__tag" x="262" y="175">D5</text>
+        <text class="map__radius-label" x="106" y="61">20 km od Berouna</text>
+
+        <g class="map__town" data-town="unhost" style="--i: 9"><circle cx="234.5" cy="107.5" r="2.6"/><text x="241" y="111">Unhošť</text></g>
+        <g class="map__town" data-town="rudna" style="--i: 6"><circle cx="280" cy="141.5" r="2.6"/><text x="286" y="145">Rudná</text></g>
+        <g class="map__town" data-town="nizbor" style="--i: 2"><circle cx="179" cy="164" r="2.6"/><text x="173" y="168" text-anchor="end">Nižbor</text></g>
+        <g class="map__town" data-town="lodenice" style="--i: 4"><circle cx="246.5" cy="164.5" r="2.6"/><text x="253" y="168">Loděnice</text></g>
+        <g class="map__town" data-town="cernosice" style="--i: 10"><circle cx="316" cy="190.5" r="2.6"/><text x="322" y="194">Černošice</text></g>
+        <g class="map__town" data-town="kraluv-dvur" style="--i: 1"><circle cx="193" cy="200" r="2.6"/><text x="187" y="214" text-anchor="end">Králův Dvůr</text></g>
+        <g class="map__town" data-town="karlstejn" style="--i: 5"><circle cx="259.5" cy="205.5" r="2.6"/><text x="253" y="222" text-anchor="end">Karlštejn</text></g>
+        <g class="map__town" data-town="dobrichovice" style="--i: 8"><circle cx="296" cy="213.5" r="2.6"/><text x="303" y="217">Dobřichovice</text></g>
+        <g class="map__town" data-town="revnice" style="--i: 7"><circle cx="280" cy="221.5" r="2.6"/><text x="264" y="238">Řevnice</text></g>
+        <g class="map__town" data-town="zdice" style="--i: 3"><circle cx="170" cy="222.5" r="2.6"/><text x="163" y="234" text-anchor="end">Zdice</text></g>
+        <g class="map__town" data-town="zebrak" style="--i: 11"><circle cx="133.5" cy="247.5" r="2.6"/><text x="108" y="262">Žebrák</text></g>
+        <g class="map__town" data-town="mnisek" style="--i: 12"><circle cx="291.5" cy="254" r="2.6"/><text x="298" y="265">Mníšek p. Brdy</text></g>
+        <g class="map__town" data-town="horovice" style="--i: 13"><circle cx="136.5" cy="273.5" r="2.6"/><text x="104" y="291">Hořovice</text></g>
+        <g class="map__town" data-town="hostomice" style="--i: 14"><circle cx="199" cy="280.5" r="2.6"/><text x="206" y="296">Hostomice</text></g>
+
+        <g class="map__city map__city--beroun" data-town="beroun"><circle class="map__pulse" cx="210" cy="188.5" r="5"/><circle cx="210" cy="188.5" r="5"/><text x="220" y="195">Beroun</text></g>
+        <g class="map__city" data-town="praha"><circle cx="360" cy="106.5" r="5"/><text x="370" y="113">Praha</text></g>
+      </svg>
+      <figcaption class="map__legend">
+        <span class="map__legend-item map__legend-item--praha">Praha — celé území</span>
+        <span class="map__legend-item map__legend-item--radius">Beroun a&nbsp;okolí do 20&nbsp;km</span>
+      </figcaption>
     </figure>
 
     <div class="where__body">
-      <p class="kicker">Kde a&nbsp;kdy</p>
-      <h2>Basketbalové tréninky v&nbsp;Praze, Berouně a&nbsp;okolí</h2>
-      <p class="lead">Trénuju na celém území Prahy a&nbsp;v&nbsp;okruhu 20&nbsp;km od Berouna. Individuální trénink potřebuje jeden koš, ne celou halu — proto vybírám školní tělocvičny a&nbsp;menší haly podle toho, odkud dojíždíte. <!-- TODO: doplnit pražské městské části / haly, tj. vrátit větu typu: V Praze nejčastěji ... -->Na Berounsku hala TJ Lokomotiva nebo venkovní hřiště Hlinky, dojíždím i&nbsp;do Králova Dvora, Zdic, Hořovic, Rudné, Řevnic a&nbsp;Dobřichovic. Konkrétní místo a&nbsp;čas domluvíme hned v&nbsp;první zprávě.</p>
+      <p class="kicker" data-reveal>Kde a&nbsp;kdy</p>
+      <h2 data-split>Basketbalové tréninky v&nbsp;Praze, Berouně a&nbsp;okolí</h2>
+      <p class="lead" data-reveal>Trénuju na celém území <span class="town" data-town="praha">Prahy</span> a&nbsp;v&nbsp;okruhu 20&nbsp;km od <span class="town" data-town="beroun">Berouna</span>. Individuální trénink potřebuje jeden koš, ne celou halu — proto vybírám školní tělocvičny a&nbsp;menší haly podle toho, odkud dojíždíte. <!-- TODO: doplnit pražské městské části / haly, tj. vrátit větu typu: V Praze nejčastěji ... -->Na Berounsku hala TJ Lokomotiva nebo venkovní hřiště Hlinky, dojíždím i&nbsp;do <span class="town" data-town="kraluv-dvur">Králova Dvora</span>, <span class="town" data-town="zdice">Zdic</span>, <span class="town" data-town="horovice">Hořovic</span>, <span class="town" data-town="rudna">Rudné</span>, <span class="town" data-town="revnice">Řevnic</span> a&nbsp;<span class="town" data-town="dobrichovice">Dobřichovic</span>. Konkrétní místo a&nbsp;čas domluvíme hned v&nbsp;první zprávě.</p>
 
-      <dl class="deflist">
+      <dl class="deflist" data-reveal-group>
         <div class="deflist__row"><dt>Kde</dt><dd>Halu domlouváme podle toho, odkud hráčka nebo hráč dojíždí — Praha, Beroun a&nbsp;okolí.</dd></div>
         <div class="deflist__row"><dt>Kdy</dt><dd>Všední dny odpoledne, víkendy po domluvě</dd></div>
         <div class="deflist__row"><dt>Venku</dt><dd>Za hezkého počasí klidně i&nbsp;na venkovním hřišti</dd></div>
@@ -391,22 +738,22 @@
 <!-- Reference: připraveno, zobrazí se po doplnění prvních citací.
      Obsah je v <template>, takže se nerenderuje ani neindexuje. -->
 <template id="reference-template">
-<section class="section section--page" id="reference">
+<section class="section section--paper" id="reference">
   <div class="container">
     <div class="section__head">
       <p class="kicker">Reference</p>
       <h2>Co říkají rodiče a&nbsp;hráči</h2>
     </div>
-    <div class="grid-cards grid-cards--3">
-      <figure class="card quote-card">
+    <div class="quotes">
+      <figure class="quote-card">
         <blockquote>[doplnit citaci]</blockquote>
         <figcaption><strong>[jméno]</strong>[role — např. maminka hráčky, 12&nbsp;let]</figcaption>
       </figure>
-      <figure class="card quote-card">
+      <figure class="quote-card">
         <blockquote>[doplnit citaci]</blockquote>
         <figcaption><strong>[jméno]</strong>[role]</figcaption>
       </figure>
-      <figure class="card quote-card">
+      <figure class="quote-card">
         <blockquote>[doplnit citaci]</blockquote>
         <figcaption><strong>[jméno]</strong>[role]</figcaption>
       </figure>
@@ -415,11 +762,14 @@
 </section>
 </template>
 
-<section class="section section--white" id="faq">
-  <div class="container">
-    <div class="section__head">
-      <p class="kicker">Časté otázky</p>
-      <h2>Nejčastější otázky rodičů</h2>
+<!-- =====================================================================
+     11. FAQ
+     ===================================================================== -->
+<section class="section section--paper faq-section" id="faq">
+  <div class="container faq-section__grid">
+    <div class="section__head faq-section__head">
+      <p class="kicker" data-reveal>Časté otázky</p>
+      <h2 data-split>Nejčastější otázky rodičů</h2>
     </div>
 
     <div class="faq">
@@ -455,14 +805,25 @@
   </div>
 </section>
 
-<section class="section section--ink" id="kontakt">
+<!-- =====================================================================
+     12. Kontakt — míč letí do koše
+     ===================================================================== -->
+<section class="section section--ink contact" id="kontakt" data-scroll="contact">
+  <div class="contact__hoop" aria-hidden="true">
+    <img class="contact__layer" src="/assets/img/hriste/kos-0-board.webp" width="720" height="478" alt="" loading="lazy" decoding="async">
+    <img class="contact__layer contact__net" src="/assets/img/hriste/kos-1-net-back.webp" width="720" height="478" alt="" loading="lazy" decoding="async">
+    <span class="contact__ball ball-sprite"></span>
+    <img class="contact__layer contact__net" src="/assets/img/hriste/kos-2-net-front.webp" width="720" height="478" alt="" loading="lazy" decoding="async">
+    <img class="contact__layer" src="/assets/img/hriste/kos-3-rim-front.webp" width="720" height="478" alt="" loading="lazy" decoding="async">
+  </div>
+
   <div class="container contact__grid">
     <div class="contact__body">
-      <p class="kicker">Kontakt</p>
-      <h2>Napište mi a&nbsp;domluvíme první trénink</h2>
-      <p class="lead">Bez registrací a&nbsp;čekání. Napište mi, kolik je hráčce nebo hráči let, kde hraje a&nbsp;co byste chtěli zlepšit, a&nbsp;domluvíme první termín.</p>
+      <p class="kicker" data-reveal>Kontakt</p>
+      <h2 data-split>Napište mi a&nbsp;domluvíme první trénink</h2>
+      <p class="lead" data-reveal>Bez registrací a&nbsp;čekání. Napište mi, kolik je hráčce nebo hráči let, kde hraje a&nbsp;co byste chtěli zlepšit, a&nbsp;domluvíme první termín.</p>
 
-      <a class="social-row" data-cta="instagram" href="https://www.instagram.com/basket_hanusova/" target="_blank" rel="noopener">
+      <a class="social-row" data-cta="instagram" href="https://www.instagram.com/basket_hanusova/" target="_blank" rel="noopener" data-reveal>
         <span class="social-row__tile"><svg aria-hidden="true" focusable="false"><use href="#i-instagram"></use></svg></span>
         <span>
           <span class="social-row__label">Instagram</span>
@@ -471,8 +832,8 @@
       </a>
     </div>
 
-    <div class="contact__cards">
-      <article class="card contact-card">
+    <div class="contact__cards" data-reveal-group>
+      <article class="contact-card">
         <span class="contact-card__tile"><svg aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg></span>
         <p class="contact-card__label">WhatsApp</p>
         <a class="contact-card__value" href="tel:+420732590579">+420&nbsp;732&nbsp;590&nbsp;579</a>
@@ -480,7 +841,7 @@
         <a class="btn btn--primary" data-cta="whatsapp" rel="noopener" href="https://wa.me/420732590579?text=Dobr%C3%BD%20den%2C%20m%C3%A1m%20z%C3%A1jem%20o%20individu%C3%A1ln%C3%AD%20tr%C3%A9nink.%20V%C4%9Bk%20hr%C3%A1%C4%8De%3A%20%E2%80%A6%2C%20klub%3A%20%E2%80%A6%2C%20co%20chceme%20zlep%C5%A1it%3A%20%E2%80%A6">Napsat na WhatsApp</a>
       </article>
 
-      <article class="card contact-card">
+      <article class="contact-card">
         <span class="contact-card__tile"><svg aria-hidden="true" focusable="false"><use href="#i-obalka"></use></svg></span>
         <p class="contact-card__label">E-mail</p>
         <a class="contact-card__value" href="mailto:hanusova6@gmail.com?subject=Individu%C3%A1ln%C3%AD%20tr%C3%A9nink%20basketbalu">hanusova6@gmail.com</a>
@@ -496,7 +857,7 @@
 <footer class="site-footer">
   <div class="container">
     <div class="site-footer__top">
-      <a class="brand" href="#top">Alena Hanušová</a>
+      <a class="brand" href="#top"><span class="brand__ball" aria-hidden="true"></span>Alena Hanušová</a>
       <nav class="site-footer__nav" aria-label="Navigace v patičce">
         <a href="#o-mne">O&nbsp;mně</a>
         <a href="#treninky">Tréninky</a>
@@ -515,13 +876,14 @@
     </div>
     <div class="site-footer__bottom">
       <p>© 2026 Alena Hanušová · IČO&nbsp;07287607</p>
-      <p><a href="/ochrana-osobnich-udaju.html">Zásady zpracování osobních údajů</a></p>
+      <p><a href="/ochrana-osobnich-udaju">Zásady zpracování osobních údajů</a></p>
       <p><button class="consent-settings" type="button" id="consent-settings" hidden>Nastavení měření návštěvnosti</button></p>
     </div>
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=2026-09" defer></script>
+<script src="/assets/js/main.js?v=2026-10" defer></script>
+<script src="/assets/js/hriste.js?v=2026-10" defer></script>
 <!-- Person.sameAs: doplnit Wikipedia, olympijskytym.cz a profil na zbl.basketball -->
 <script type="application/ld+json">
 {
@@ -538,10 +900,67 @@
       "sameAs": [
         "https://www.instagram.com/basket_hanusova/"
       ],
+      "award": [
+        "Účast na olympijských hrách v Londýně 2012",
+        "Vítězka Euroligy 2015 s USK Praha",
+        "8× mistryně české ligy",
+        "Mistrovství světa 2014 a 2026",
+        "Nejlepší střelkyně ŽBL 2023/24",
+        "2× Basketbalistka roku (2. místo)",
+        "Přes 5 000 bodů v české lize — desátá hráčka v historii soutěže"
+      ],
       "knowsAbout": [
         "basketbal",
         "individuální trénink",
-        "trénink pivotů"
+        "trénink pivotů",
+        "střelba",
+        "driblink",
+        "hra 1 na 1",
+        "hra pod košem",
+        "pick and roll"
+      ],
+      "subjectOf": [
+        {
+          "@type": "NewsArticle",
+          "headline": "Zabojuju o nominaci a uvidíme, jak to dopadne, říká Hanušová k MS",
+          "url": "https://sport.ceskatelevize.cz/clanek/basketbal/zabojuju-o-nominaci-a-uvidime-jak-to-dopadne-rika-hanusova-k-ms-158408",
+          "datePublished": "2026-08",
+          "publisher": { "@type": "Organization", "name": "ČT sport" }
+        },
+        {
+          "@type": "NewsArticle",
+          "headline": "Je to neuvěřitelné, přiznává Hanušová",
+          "url": "https://zbl.basketball/je-to-neuveritelne-priznava-hanusova/18984",
+          "datePublished": "2025-03",
+          "publisher": { "@type": "Organization", "name": "ŽBL.basketball" }
+        },
+        {
+          "@type": "NewsArticle",
+          "headline": "Strašně nás to mrzí, smutnila Hanušová",
+          "url": "https://isport.blesk.cz/clanek/ostatni-basketbal/479533/basketbalistky-konci-na-ms-uz-po-zakladni-skupine-strasne-nas-to-mrzi-smutnila-hanusova.html",
+          "datePublished": "2026-09",
+          "publisher": { "@type": "Organization", "name": "iSport.cz" }
+        },
+        {
+          "@type": "NewsArticle",
+          "headline": "Pozvánka byl lehký šok, přiznala Hanušová",
+          "url": "https://sport.ceskatelevize.cz/clanek/basketbal/pozvanka-byl-lehky-sok-uzavrit-tuto-kapitolu-doma-by-bylo-krasne-priznala-hanusova/6824a5711ab93781d4fe1168",
+          "datePublished": "2025-05",
+          "publisher": { "@type": "Organization", "name": "ČT sport" }
+        },
+        {
+          "@type": "NewsArticle",
+          "headline": "Bojovaly jsme až do konce, řekla po prohře s Čínou Hanušová",
+          "url": "https://www.ceskenoviny.cz/zpravy/bojovaly-jsme-az-do-konce-rekla-po-prohre-basketbalistek-s-cinou-hanusova/2870886",
+          "datePublished": "2026-09",
+          "publisher": { "@type": "Organization", "name": "ČTK" }
+        },
+        {
+          "@type": "NewsArticle",
+          "headline": "Brandýs udolal Slovanku, Hanušová se blíží hranici pěti tisíc bodů",
+          "url": "https://prazsky.denik.cz/basketbal/zenska-basketbalova-liga-nadstavba-brandys-nad-labem-slovanka-alena-hanusova/",
+          "publisher": { "@type": "Organization", "name": "Pražský deník" }
+        }
       ]
     },
     {

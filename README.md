@@ -1,7 +1,11 @@
 # Web Alena Hanušová — individuální basketbalové tréninky
 
-Statický one-pager. Čisté HTML5 + jeden CSS + jeden JS soubor, žádný framework,
+Statický one-pager. Čisté HTML5 + jeden CSS + dva JS soubory, žádný framework,
 žádný bundler, žádný build krok. Co je v repozitáři, to se nahraje na hosting.
+
+Na větvi `new-version` je nová verze **„Hala“** — stejné texty, nový vzhled
+a pohybová vrstva (animace, parallax, datové vizualizace, 3D prvky z Blenderu).
+Popis je v sekci [Verze „Hala“](#verze-hala) níže.
 
 - **Doména:** `baskethanusova.cz`, registrovaná u Webglobe
 - **Hosting:** Netlify (free tier), nasazení z Gitu
@@ -12,6 +16,7 @@ Statický one-pager. Čisté HTML5 + jeden CSS + jeden JS soubor, žádný frame
 
 ```
 index.html                    hlavní stránka (všechny sekce)
+llms.txt                      shrnutí webu pro AI vyhledávače (GEO)
 ochrana-osobnich-udaju.html   zásady zpracování osobních údajů
 404.html                      chybová stránka
 sitemap.xml  robots.txt  site.webmanifest
@@ -20,10 +25,13 @@ netlify.toml                  hlavičky a cache pro Netlify
 favicon.ico  favicon.svg  apple-touch-icon.png
 assets/
   css/style.css               jediný stylopis (tokeny + všechny komponenty)
-  js/main.js                  jediný skript (mobilní menu + souhlas s analytikou)
+  js/main.js                  základ: mobilní menu + souhlas s analytikou
+  js/hriste.js                pohybová vrstva (jen na hlavní stránce, viz „Verze Hala“)
   fonts/                      Barlow 400/500/600, Barlow Condensed 600/700
                               woff2, subsety latin + latin-ext
-  img/                        hero, about, og-image, mapa
+  img/                        původní fotky (og-image, JSON-LD), mapa.png už nepoužitá
+  img/hriste/                 assety verze Hala: výřezy postavy, aréna, míč, koš
+blender/                      scéna pro Blender, výřez postavy (macOS Vision), export
   icons/                      6 ikon tréninkových oblastí, WhatsApp, Instagram, obálka
   icons/media/                loga médií
 ```
@@ -69,11 +77,6 @@ Zbývá dodat:
 - **Šest ikon tréninkových oblastí** v `assets/icons/` je kreslených podle popisů
   v sekci 5.6 zadání. Pokud mají odpovídat Figmě, potřebují export uzlů
   `Ikona / *` › `Icon` jako 24×24 SVG.
-- **Mapu ve 2× nebo jako SVG.** Dodaná `mapa.png` má 560×400, což je přesně
-  zobrazovaná velikost, takže na retina displejích bude mírně rozmazaná. Export
-  z Figmy ve 2× (1120×800) nebo SVG s textem v křivkách to vyřeší. Obrázek má
-  vlastní zaoblené rohy a podklad, proto `.where__map` v CSS nemá rámeček — při
-  výměně to zachovej.
 - **Vyšší rozlišení loga ČTK.** Dodané má 150×22 px, takže se zobrazuje 1:1 a na
   retina displejích bude jediné rozmazané — ostatní loga jsou vektory nebo se
   zmenšují. Ideálně vektor z press materiálů ČTK.
@@ -84,19 +87,18 @@ Zbývá dodat:
   nemá vnitřní velikost a v mřížce s `place-items: center` se zobrazí jako 0×0 —
   tiše, bez chyby v konzoli. Takhle přišly `irozhlas.svg` i moje `ctk.svg`.
 - V `index.html` uprav u daného `<img>` `width`/`height` na skutečný poměr souboru
-  (kvůli rezervaci místa) a `data-h` na zobrazovanou výšku (24–34 px podle optické
-  váhy loga). Zobrazovanou velikost řídí `data-h`, ne `width`/`height`.
+  (kvůli rezervaci místa) a `style="--h: …"` na zobrazovanou výšku (24–34 px podle
+  optické váhy loga). Zobrazovanou velikost řídí `--h`, ne `width`/`height`.
+- Loga jsou v běžícím pásu **dvakrát** (druhá kopie kvůli plynulé smyčce, má
+  `aria-hidden` a `tabindex="-1"`). Změnu udělej v obou kopiích.
 - Rastry stačí ve dvojnásobku zobrazované velikosti, víc je zbytečná zátěž.
 
-### Pás log na mobilu
+### Pás log
 
-Zadání chce na mobilu dvě řady po třech. Na šířce 380 px tím vyjde sloupec asi
-105 px, takže široká loga (iROZHLAS 6,9:1, ČTK, CZ Basketball) se zúží podle
-sloupce a proporčně sníží na 15–20 px. Poměry se nedeformují, ale drobný text
-v logu ČTK je v té velikosti nečitelný a řádek působí nevyrovnaně.
-Pokud to bude vadit, řešení jsou dvě: na telefonech přepnout mřížku na dva
-sloupce (`grid-template-columns: repeat(2, 1fr)` do `.media-logos` pod 480 px),
-nebo u ČTK použít jen kompaktní znak s globusem bez opisu.
+Ve verzi Hala loga běží v nekonečném pásu (na mobilu i desktopu stejně velká,
+takže odpadl problém s nečitelným ČTK ve dvou řadách po třech). Při najetí myší
+se pás zastaví a logo se zbarví. S omezením pohybu se pás nehýbe a loga se
+zalomí do řádků na střed.
 
 ### Google Analytics 4
 
@@ -150,8 +152,79 @@ stáhnout), zvyš `?v=` u dotčených odkazů a cache se obejde.
 Původně to bylo nastavené na rok bez revalidace, což je rychlejší, ale znamenalo
 to, že po každé výměně obrázku se `?v=` **musí** zvýšit — jinak vracejícím se
 návštěvníkům zůstane rok stará podoba a ty to nepoznáš, protože ve svém
-prohlížeči novou verzi vidíš. U webu, který se mění párkrát do roka a má 183 kB,
+prohlížeči novou verzi vidíš. U webu, který se mění párkrát do roka a má pár set kB,
 ta ztráta výkonu nestojí za to riziko.
+
+## Verze „Hala“
+
+Větev `new-version`. **Texty jsou beze změny** (ověřeno strojově proti `main`),
+změnil se vzhled a přibyla pohybová vrstva. Kde vizualizace potřebovala popisek,
+je poskládaný jen z faktů, která už na webu jsou (časová osa kariéry, popisky na
+taktické tabuli, kalkulačka).
+
+### Koncept
+
+Tmavá hala, papír a červená z reprezentačního dresu. Písmo zůstalo (Barlow
+a Barlow Condensed, self-hostované). Prvky, které web odlišují od šablony:
+
+| sekce | co se děje |
+|---|---|
+| Úvod | Alena vyříznutá z fotky stojí v kuželu reflektoru na palubovce z Blenderu. Čáry hřiště (SVG v perspektivě) se nakreslí pod ni, za ní je velké obrysové jméno, kolem trenérské poznámky křídou. Při scrollu jedou vrstvy různou rychlostí (parallax). |
+| Hlavička | časomíra útoku: při scrollu odpočítává 24 → 0, na konci stránky „bzučák“ |
+| Výsledková tabule | LED číslice, počítadla (8×, 5 000+, 2×) |
+| O mně | portrét na červené desce s čárami hřiště, deska a fotka jedou při scrollu proti sobě |
+| Kariéra | na desktopu se sekce připne a časová osa jede do strany; na mobilu svislá. U března 2025 se rozsvítí **5 000 teček = 5 000 bodů** |
+| Tréninky | **taktická tabule**: každá oblast má vlastní rozehrávku v notaci trenérů (klikatá čára = dribling, přerušovaná = přihrávka, T = clona). Přepíná se sama, klik ji zastaví. |
+| Pro koho | věková rozpětí jako graf na společné ose |
+| Jak to probíhá | míč z Blenderu přihrává po křivce mezi čtyřmi kroky podle scrollu |
+| Ceník | vstupenky s perforací + kalkulačka ceny na hráče (počítá jen z ceníku) |
+| Kde a kdy | mapa z Figmy jako animované SVG, obce v textu zvýrazní bod na mapě |
+| Kontakt | míč při scrollu letí po oblouku do koše z Blenderu, síťka se zhoupne |
+
+### Soubory
+
+- `assets/js/hriste.js` — celá pohybová vrstva, komentovaná po sekcích.
+  `main.js` (menu, souhlas s GA) zůstal samostatný, podstránky načítají jen ten.
+- `assets/img/hriste/` — `alena-dribling(-600).webp` a `alena-portret(-520).webp`
+  (výřezy z `hero.jpg` a `about.jpg`), `arena(-640).webp` (pozadí úvodu),
+  `mic.webp` (sprite 6 × 4 snímků, 117 kB, načte se až 800 px před sekcí),
+  `kos-0…3.webp` (koš po vrstvách, míč se vkládá mezi ně).
+- `blender/scene.py` — scény `arena`, `ball`, `hoop`; `blender/cutout.swift` —
+  výřez postavy přes macOS Vision; `blender/export.sh` — z renderů a fotek
+  vyrobí všechny WebP. Postup:
+
+```bash
+B=/Applications/Blender.app/Contents/MacOS/Blender
+for m in arena ball hoop; do $B -b --python blender/scene.py -- $m /tmp/render; done
+sh blender/export.sh /tmp/render
+```
+
+  Po změně kamery u koše je potřeba změřit, kde leží střed obroučky, a opravit
+  poměry 0,498 × 0,502 v `hriste.js` (sekce „Kontakt“).
+
+### Pravidla pohybu
+
+- **Bez JavaScriptu** je všechno vidět a ve výchozím stavu (animace zapíná třída
+  `.js` z inline skriptu v `<head>`). Nadpisy zůstávají v HTML celé, rozdělení na
+  slova dělá až skript, takže vyhledávače i čtečky vidí normální text.
+- **Omezení pohybu** (`prefers-reduced-motion`): nic se nescrolluje ani neanimuje,
+  ukážou se koncové stavy — časová osa svisle, všechny kroky rozsvícené, míč
+  leží v síťce, tabule ukazuje první rozehrávku.
+- Scroll řídí jedna smyčka přes `requestAnimationFrame` a počítá jen komponenty
+  blízko výhledu (`IntersectionObserver`). `will-change` má jen pět prvků, které
+  se hýbou s každým snímkem.
+- Předky animovaných prvků mají `overflow: clip`, nikdy `hidden` (viz poznámka
+  o zamrzlém rendereru na větvi `animace`).
+
+### SEO a GEO
+
+- Titulek, popis, kanonická URL, Open Graph a všechny texty beze změny.
+- JSON-LD: `Person` doplněn o `award` (úspěchy z webu), rozšířené `knowsAbout`
+  a `subjectOf` se šesti články z médií (titulek, URL, vydavatel, měsíc).
+- `llms.txt` — stručné shrnutí webu pro AI vyhledávače, jen fakta z webu.
+- Jeden `h1`, `h2` na sekci, obsah vizualizací je i v textu (časová osa je `<ol>`
+  s `<time>`, věkový graf doplňují karty, tabule má popisky v kartách).
+- LCP je výřez postavy (preload se `srcset`, 32 kB na mobilu, 64 kB na desktopu).
 
 ## Nasazení
 
@@ -294,6 +367,12 @@ přesměrování a stylovanou 404 je potřeba ověřit až na hostingu.
 npx html-validate@9 index.html ochrana-osobnich-udaju.html 404.html
 ```
 
+Konfigurace je v `.htmlvalidate.json`: doporučená sada bez pravidla
+`no-inline-style`. Verze Hala posílá do CSS data přes vlastní vlastnosti ve
+`style` (zpoždění náběhu `--delay`, věková rozpětí grafu `--from`/`--to`, výšky
+log `--h`, pořadí obcí na mapě `--i`). Je to vstup pro CSS, ne styling, a jinak
+by na to bylo potřeba desítky jednorázových tříd.
+
 ## Poznámky k rozhodnutím
 
 - **Odstraněné zmínky o prevenci zranění.** Zadání mělo v sekci „Co trénujeme"
@@ -331,5 +410,7 @@ npx html-validate@9 index.html ochrana-osobnich-udaju.html 404.html
 - **Sekce Reference** je hotová, ale zabalená v `<template id="reference-template">`.
   Nerenderuje se ani neindexuje. Zobrazíš ji tak, že `<template>` a `</template>`
   okolo ní smažeš a doplníš citace.
-- **Mapa** je vložená přes `<img>`, popis je v `alt` (u `<img>` je `role="img"`
-  s `aria-label` nadbytečné a s `alt=""` by si protiřečily).
+- **Mapa** je ve verzi Hala překreslená z Figmy jako inline SVG (stejné obce,
+  pozice, kruh 20 km i území Prahy), takže je ostrá na retině a dá se animovat.
+  Popis je v `<title>` a `role="img"`. `assets/img/mapa.png` zůstal v repozitáři,
+  ale nepoužívá se.
