@@ -21,7 +21,11 @@
 
   var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   var MOTION = !motionQuery.matches;
-  var NBSP = ' ';
+  var NBSP = '\u00a0';
+  /* anglická verze (/en/): 1,400 CZK; česká: 1 400 Kč */
+  var EN = (document.documentElement.lang || '').slice(0, 2) === 'en';
+  var GROUP = EN ? ',' : NBSP;
+  var CURRENCY = EN ? 'CZK' : 'Kč';
 
   /* ------------------------------------------------------------------ */
   /* 1. Pomocné funkce                                                  */
@@ -43,9 +47,13 @@
     return 1 - Math.pow(1 - t, 3);
   }
 
-  /* 5000 -> "5 000" s pevnou mezerou */
+  /* 5000 -> "5 000" s pevnou mezerou (v angličtině "5,000") */
   function formatNumber(value) {
-    return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP);
+    return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, GROUP);
+  }
+
+  function formatPrice(value) {
+    return formatNumber(value) + NBSP + CURRENCY;
   }
 
   function tween(duration, onFrame, onDone) {
@@ -666,7 +674,7 @@
       });
     });
 
-    var section = $('#treninky');
+    var section = board.closest('.playbook');
     section.addEventListener('mouseenter', function () {
       paused = true;
       stopAuto();
@@ -786,16 +794,18 @@
         bar.classList.toggle('is-current', n === players);
       });
 
-      totalText.textContent = 'celkem ' + formatNumber(total) + NBSP + 'Kč za 60' + NBSP + 'minut';
+      totalText.textContent = EN
+        ? 'total ' + formatPrice(total) + ' for 60' + NBSP + 'minutes'
+        : 'celkem ' + formatPrice(total) + ' za 60' + NBSP + 'minut';
 
       var from = shownPer;
       if (!MOTION || from === per) {
-        perValue.textContent = formatNumber(per) + NBSP + 'Kč';
+        perValue.textContent = formatPrice(per);
         shownPer = per;
         return;
       }
       tween(500, function (t) {
-        perValue.textContent = formatNumber(from + (per - from) * easeOut(t)) + NBSP + 'Kč';
+        perValue.textContent = formatPrice(from + (per - from) * easeOut(t));
       });
       shownPer = per;
     }

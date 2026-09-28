@@ -1,5 +1,5 @@
-/* Jediný skript webu: mobilní menu a souhlas s analytikou.
-   Vše ostatní na webu funguje bez JS. */
+/* Základní skript webu: mobilní menu, přepínač jazyka a souhlas s analytikou.
+   Běží na všech stránkách v obou jazycích. Vše ostatní funguje bez JS. */
 (function () {
   'use strict';
 
@@ -16,6 +16,37 @@
   var STORAGE_KEY = 'ah-analytika-souhlas';
   var GA_PLACEHOLDER = 'G-XXXXXXXXXX';
   var GA_ENABLED = GA_ID !== GA_PLACEHOLDER && /^G-[A-Z0-9]{6,}$/.test(GA_ID);
+
+  /* Jazyk stránky podle <html lang>. Anglická verze leží v /en/. */
+  var LANG = (document.documentElement.lang || 'cs').slice(0, 2) === 'en' ? 'en' : 'cs';
+  var TEXT = {
+    cs: {
+      menuOpen: 'Otevřít menu',
+      menuClose: 'Zavřít menu',
+      consentTitle: 'Měření návštěvnosti',
+      consentText: 'Rád(a) bych věděla, kolik lidí web najde a co je zajímá. ' +
+        'K tomu používám Google Analytics, které si do prohlížeče ukládá cookies. ' +
+        'Bez tvého souhlasu se nespustí a web funguje úplně stejně. ' +
+        '<a href="/ochrana-osobnich-udaju.html">Podrobnosti v zásadách zpracování údajů</a>.',
+      accept: 'Souhlasím',
+      decline: 'Odmítnout',
+      settingsOn: 'Vypnout měření návštěvnosti',
+      settingsOff: 'Nastavení měření návštěvnosti'
+    },
+    en: {
+      menuOpen: 'Open menu',
+      menuClose: 'Close menu',
+      consentTitle: 'Visitor analytics',
+      consentText: 'I’d like to know how many people find this website and what they are interested in. ' +
+        'For that I use Google Analytics, which stores cookies in your browser. ' +
+        'It won’t run without your consent, and the website works exactly the same either way. ' +
+        '<a href="/en/privacy-policy.html">Details in the privacy policy</a>.',
+      accept: 'Accept',
+      decline: 'Decline',
+      settingsOn: 'Turn off visitor analytics',
+      settingsOff: 'Visitor analytics settings'
+    }
+  }[LANG];
 
   /* ------------------------------------------------------------------ */
   /* Mobilní menu                                                       */
@@ -54,8 +85,48 @@
   function setMenu(open) {
     drawer.hidden = !open;
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.setAttribute('aria-label', open ? 'Zavřít menu' : 'Otevřít menu');
+    toggle.setAttribute('aria-label', open ? TEXT.menuClose : TEXT.menuOpen);
   }
+
+  /* ------------------------------------------------------------------ */
+  /* Přepínač jazyka                                                    */
+  /* ------------------------------------------------------------------ */
+
+  /* Kotvy sekcí na hlavní stránce: česká ↔ anglická. Při přepnutí jazyka
+     se návštěvník dostane na stejnou sekci, kterou má právě před sebou. */
+  var SECTIONS = [
+    ['top', 'top'], ['o-mne', 'about'], ['kariera', 'career'], ['media', 'media'],
+    ['treninky', 'training'], ['pro-koho', 'audience'], ['prubeh', 'how-it-works'],
+    ['cenik', 'pricing'], ['praha-beroun', 'prague-beroun'], ['faq', 'faq'],
+    ['kontakt', 'contact']
+  ];
+
+  function currentSection() {
+    var own = LANG === 'en' ? 1 : 0;
+    var line = window.innerHeight * 0.35;
+    var found = null;
+    SECTIONS.forEach(function (pair) {
+      var el = document.getElementById(pair[own]);
+      if (el && el.getBoundingClientRect().top <= line) {
+        found = pair;
+      }
+    });
+    return found;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-lang-switch]'), function (link) {
+    link.addEventListener('click', function () {
+      var target = link.getAttribute('data-lang-switch');
+      var href = link.getAttribute('href');
+      if (target === LANG || href.slice(-1) !== '/') {
+        return;
+      }
+      var pair = currentSection();
+      if (pair && pair[0] !== 'top') {
+        link.setAttribute('href', href + '#' + pair[target === 'en' ? 1 : 0]);
+      }
+    });
+  });
 
   /* ------------------------------------------------------------------ */
   /* Souhlas s analytikou                                               */
@@ -125,15 +196,12 @@
     wrap.innerHTML =
       '<div class="consent__inner">' +
         '<div class="consent__body">' +
-          '<h2 class="consent__title" id="consent-title">Měření návštěvnosti</h2>' +
-          '<p class="consent__text" id="consent-text">Rád(a) bych věděla, kolik lidí web najde a co je zajímá. ' +
-          'K tomu používám Google Analytics, které si do prohlížeče ukládá cookies. ' +
-          'Bez tvého souhlasu se nespustí a web funguje úplně stejně. ' +
-          '<a href="/ochrana-osobnich-udaju.html">Podrobnosti v zásadách zpracování údajů</a>.</p>' +
+          '<h2 class="consent__title" id="consent-title">' + TEXT.consentTitle + '</h2>' +
+          '<p class="consent__text" id="consent-text">' + TEXT.consentText + '</p>' +
         '</div>' +
         '<div class="consent__actions">' +
-          '<button class="btn btn--primary btn--sm" type="button" data-consent="ano">Souhlasím</button>' +
-          '<button class="btn btn--secondary btn--sm" type="button" data-consent="ne">Odmítnout</button>' +
+          '<button class="btn btn--primary btn--sm" type="button" data-consent="ano">' + TEXT.accept + '</button>' +
+          '<button class="btn btn--secondary btn--sm" type="button" data-consent="ne">' + TEXT.decline + '</button>' +
         '</div>' +
       '</div>';
 
@@ -183,8 +251,8 @@
     }
     button.hidden = false;
     button.textContent = readConsent() === 'ano'
-      ? 'Vypnout měření návštěvnosti'
-      : 'Nastavení měření návštěvnosti';
+      ? TEXT.settingsOn
+      : TEXT.settingsOff;
   }
 
   function initConsent() {

@@ -10,6 +10,12 @@
   publish = "."
 
 # Netlify automaticky použije /404.html pro neexistující adresy.
+# Anglická verze má vlastní 404. Pravidlo neplatí pro existující soubory
+# (bez force), takže /en/ a /en/privacy-policy.html se servírují normálně.
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404.html"
+  status = 404
 
 [[headers]]
   for = "/*"

@@ -16,7 +16,8 @@ Popis je v sekci [Verze „Hala“](#verze-hala) níže.
 
 ```
 index.html                    hlavní stránka (všechny sekce)
-llms.txt                      shrnutí webu pro AI vyhledávače (GEO)
+en/                           anglická verze (index, privacy-policy, 404)
+llms.txt                      shrnutí webu pro AI vyhledávače (GEO), česky i anglicky
 ochrana-osobnich-udaju.html   zásady zpracování osobních údajů
 404.html                      chybová stránka
 sitemap.xml  robots.txt  site.webmanifest
@@ -228,6 +229,38 @@ sh blender/export.sh /tmp/render
 - Jeden `h1`, `h2` na sekci, obsah vizualizací je i v textu (časová osa je `<ol>`
   s `<time>`, věkový graf doplňují karty, tabule má popisky v kartách).
 - LCP je výřez postavy (preload se `srcset`, 32 kB na mobilu, 64 kB na desktopu).
+
+## Anglická verze (`/en/`)
+
+| česky | anglicky |
+|---|---|
+| `index.html` | `en/index.html` |
+| `ochrana-osobnich-udaju.html` | `en/privacy-policy.html` (překlad s poznámkou, že platí česká verze) |
+| `404.html` | `en/404.html` (Netlify ji servíruje pro neexistující adresy pod `/en/`, pravidlo v `netlify.toml`) |
+
+**Anglické stránky jsou samostatné soubory se stejnou strukturou.** Když se změní
+text na české stránce, je potřeba ho přepsat i v anglické (a naopak). Kotvy sekcí
+jsou v každém jazyce jiné (`#treninky` ↔ `#training`); jejich převodní tabulka je
+v `assets/js/main.js` (`SECTIONS`) a přepínač CZ / EN podle ní pošle návštěvníka
+na stejnou sekci ve druhém jazyce. Při přidání sekce ji doplň i tam.
+
+Texty generované skriptem jsou dvojjazyčné podle `<html lang>`: lišta souhlasu
+a menu v `main.js` (objekt `TEXT`), kalkulačka a formát čísel v `hriste.js`
+(`1 400 Kč` ↔ `1,400 CZK`).
+
+SEO a GEO:
+
+- každá stránka má kanonickou URL na sebe a `hreflang` cs / en / x-default
+  (x-default = česká verze), totéž je v `sitemap.xml` (`xhtml:link`)
+- anglické `title`, `description`, `og:*` (`og:locale` en_GB, alternativa cs_CZ)
+  a vlastní OG obrázek `assets/img/og-image-en.jpg` (vyrobený stejným příkazem
+  jako český, viz níže, jen s anglickým textem)
+- anglická strukturovaná data: stejná osoba (`@id` …/#alena-hanusova) jako
+  v české verzi, anglický popis služby, nabídky, FAQ; články z médií mají
+  `inLanguage: cs` a odkazy na ně `hreflang="cs"`
+- `llms.txt` má pod českou částí anglické shrnutí
+- web **nepřesměrovává** podle jazyka prohlížeče — vyhledávače by pak neviděly
+  obě verze; o jazyce rozhoduje návštěvník přepínačem
 
 ## Nasazení
 
