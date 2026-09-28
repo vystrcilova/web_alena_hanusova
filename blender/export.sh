@@ -22,7 +22,10 @@ cwebp -quiet -q 70 -resize 640 800 "$SRC/arena.png" -o "$IMG/hriste/arena-640.we
 
 # --- Výřezy postavy z fotek (macOS Vision) ------------------------------------
 swiftc -O "$ROOT/blender/cutout.swift" -o "$TMP/cutout"
-"$TMP/cutout" "$IMG/hero.jpg" "$TMP/hero-cut.png"
+"$TMP/cutout" "$IMG/hero.jpg" "$TMP/hero-cut.png" "$TMP/hero-mask.png"
+# Vision tu přibral kus pozadí u černého návleku — ruční oprava hrany
+python3 "$ROOT/blender/oprava-masky.py" "$IMG/hero.jpg" "$TMP/hero-mask.png" "$TMP/hero-mask-ok.png"
+magick "$IMG/hero.jpg" "$TMP/hero-mask-ok.png" -alpha off -compose CopyOpacity -composite "$TMP/hero-cut.png"
 "$TMP/cutout" "$IMG/about.jpg" "$TMP/about-cut.png"
 cwebp -quiet -q 82 -alpha_q 90 "$TMP/hero-cut.png" -o "$IMG/hriste/alena-dribling.webp"
 cwebp -quiet -q 80 -alpha_q 90 -resize 600 750 "$TMP/hero-cut.png" -o "$IMG/hriste/alena-dribling-600.webp"

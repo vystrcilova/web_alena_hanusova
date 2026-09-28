@@ -190,8 +190,11 @@ a Barlow Condensed, self-hostované). Prvky, které web odlišují od šablony:
   `mic.webp` (sprite 6 × 4 snímků, 117 kB, načte se až 800 px před sekcí),
   `kos-0…3.webp` (koš po vrstvách, míč se vkládá mezi ně).
 - `blender/scene.py` — scény `arena`, `ball`, `hoop`; `blender/cutout.swift` —
-  výřez postavy přes macOS Vision; `blender/export.sh` — z renderů a fotek
-  vyrobí všechny WebP. Postup:
+  výřez postavy přes macOS Vision; `blender/oprava-masky.py` — ruční oprava
+  výřezu z `hero.jpg` (Vision přibral kus tmavého pozadí u černého návleku,
+  hrana návleku je v souboru odečtená po řádcích); `blender/export.sh` — z renderů
+  a fotek vyrobí všechny WebP. Při výměně `hero.jpg` za jinou fotku je potřeba
+  opravu v `export.sh` vypnout nebo hranu odečíst znovu. Postup:
 
 ```bash
 B=/Applications/Blender.app/Contents/MacOS/Blender
